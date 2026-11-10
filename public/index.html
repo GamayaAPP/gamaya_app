@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق جمعية</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+            max-width: 420px;
+            margin: 0 auto;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(168, 85, 247, 0.1) 70%, transparent 100%);
+            filter: blur(60px);
+            border-radius: 50%;
+            top: -60px;
+            right: -60px;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(52, 211, 153, 0.3) 0%, transparent 70%);
+            filter: blur(50px);
+            border-radius: 50%;
+            bottom: 40px;
+            left: -40px;
+            z-index: 0;
+        }
+
+        .top-bar {
+            padding: 15px 20px 0;
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            z-index: 10;
+        }
+
+        html[dir="ltr"] .top-bar {
+            justify-content: flex-end;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #a5b4fc;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:active {
+            transform: scale(0.95);
+        }
+
+        .container {
+            padding: 10px 20px 20px;
+            text-align: right;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 5;
+        }
+
+        html[dir="ltr"] .container {
+            text-align: left;
+        }
+
+        .screen {
+            width: 100%;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* 3D Liquid Glass Overlays & Cards */
+        .notification-modal-overlay, .bottom-sheet-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .notification-dialog {
+            background: rgba(30, 41, 59, 0.55);
+            backdrop-filter: blur(25px) saturate(190%);
+            -webkit-backdrop-filter: blur(25px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            width: 85%;
+            max-width: 320px;
+            border-radius: 24px;
+            text-align: center;
+            padding: 24px 18px 18px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+        }
+
+        .notification-dialog h3 { font-size: 16px; color: #fff; margin-bottom: 10px; font-weight: 700; }
+        .notification-dialog p { font-size: 13px; color: #cbd5e1; margin-bottom: 20px; line-height: 1.5; }
+
+        .notification-buttons {
+            display: flex;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            margin: 0 -18px -18px -18px;
+        }
+
+        .notif-btn {
+            flex: 1; padding: 14px; background: none; border: none;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notif-btn:first-child { border-left: 1px solid rgba(255, 255, 255, 0.12); color: #f87171; }
+        .notif-btn:last-child { color: #38bdf8; }
+        .notif-btn:active { background: rgba(255, 255, 255, 0.05); }
+
+        .bottom-sheet-overlay {
+            align-items: flex-end;
+            z-index: 3000;
+        }
+
+        .bottom-sheet {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            border-top: 1.5px solid rgba(255, 255, 255, 0.25);
+            width: 100%;
+            padding: 24px 20px 30px;
+            box-shadow: 0 -15px 40px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.3s ease-in-out;
+            text-align: right;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .bottom-sheet h3 {
+            font-size: 17px;
+            color: #fff;
+            margin-bottom: 18px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .sheet-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+        .sheet-option:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 24px 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .more-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .more-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+        }
+        .more-item-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .more-item-left {
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        /* 3D Liquid Glass Circle Icon */
+        .welcome-circle {
+            width: 80px;
+            height: 80px;
+            margin: 15px auto 20px auto;
+            border-radius: 50%;
+            background: radial-gradient(135% 135% at 30% 30%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4),
+                        inset 0 2px 4px rgba(255, 255, 255, 0.6),
+                        inset 0 -4px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            transition: transform 0.3s ease;
+        }
+
+        .welcome-circle:hover {
+            transform: scale(1.05);
+        }
+
+        h2 { font-size: 20px; margin-bottom: 6px; color: #ffffff; font-weight: 700; }
+        p { color: #cbd5e1; font-size: 13px; margin-bottom: 18px; line-height: 1.4; }
+        label { display: block; font-size: 13px; color: #a5b4fc; margin-bottom: 6px; font-weight: 600; text-align: inherit; }
+
+        input, select, textarea {
+            width: 100%; padding: 14px; margin-bottom: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 14px; font-size: 14px; color: #fff; outline: none; transition: all 0.3s ease; text-align: inherit;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #818cf8;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 12px rgba(129, 140, 248, 0.4);
+        }
+
+        input.error, select.error, textarea.error { border-color: #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
+        .error-msg { font-size: 11px; color: #ef4444; margin-bottom: 10px; display: none; text-align: inherit; }
+        .error-msg.show { display: block; }
+
+        input::placeholder, textarea::placeholder { color: #94a3b8; }
+
+        .pin-inputs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 18px 0;
+        }
+
+        .pin-inputs input {
+            width: 48px;
+            height: 48px;
+            text-align: center;
+            font-size: 22px;
+            border-radius: 14px;
+        }
+
+        .payment-box {
+            background: rgba(0, 0, 0, 0.25); padding: 16px; border-radius: 16px; margin-bottom: 14px; border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+        }
+        .payment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .payment-info h4 { font-size: 15px; color: #fff; margin-bottom: 2px; }
+        .payment-info span { font-size: 11px; color: #94a3b8; }
+
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255, 255, 255, 0.2); transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #6366f1; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .payment-fields { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+
+        .review-section { background: rgba(0, 0, 0, 0.25); border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .review-section-title { font-size: 15px; font-weight: bold; color: #818cf8; margin-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 6px; }
+        .review-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+        .review-label { color: #94a3b8; }
+        .review-value { color: #fff; font-weight: 600; }
+
+        .tabs-header {
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 20px;
+        }
+        .tab-item {
+            padding: 10px 15px;
+            font-size: 13px;
+            color: #94a3b8;
+            cursor: pointer;
+            position: relative;
+            font-weight: 600;
+        }
+        .tab-item.active {
+            color: #34d399;
+        }
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; width: 100%; height: 2.5px;
+            background-color: #34d399;
+            border-radius: 2px;
+        }
+
+        .contribution-type-box {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .contrib-option {
+            flex: 1; padding: 12px; text-align: center; font-size: 13px; color: #94a3b8; cursor: pointer; transition: all 0.2s ease;
+        }
+        .contrib-option.active {
+            background: rgba(5, 150, 105, 0.35);
+            color: #34d399;
+            font-weight: bold;
+            border: 1px solid #059669;
+            border-radius: 12px;
+        }
+
+        #toastMsg {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.9); color: #f8fafc; padding: 12px 24px; border-radius: 16px;
+            font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(15px); z-index: 1000; display: none; text-align: center; width: 90%;
+        }
+
+        .steps-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 5px; }
+        .step-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #94a3b8; }
+        .step-circle {
+            width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center;
+            font-weight: bold; margin-bottom: 4px; font-size: 13px;
+        }
+        .step-item.active .step-circle { background: #6366f1; color: #fff; border-color: #818cf8; box-shadow: 0 0 12px rgba(99, 102, 241, 0.5); }
+        .step-item.active { color: #818cf8; font-weight: bold; }
+
+        /* 3D Buttons */
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 16px; font-size: 15px;
+            font-weight: bold; cursor: pointer; margin-top: 10px; transition: all 0.2s ease;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn:active { transform: scale(0.97); }
+        
+        .btn-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        }
+        .btn-green-outline {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+
+        /* 3D Floating Bottom Navigation */
+        .bottom-nav {
+            display: flex; justify-content: space-around;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-top: 1.5px solid rgba(255, 255, 255, 0.18);
+            padding: 12px 0; position: sticky; bottom: 0; width: 100%;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            z-index: 100;
+        }
+        .nav-item { text-decoration: none; color: #94a3b8; font-size: 11px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.2s; }
+        .nav-item.active { color: #818cf8; font-weight: bold; transform: translateY(-2px); }
+        .nav-item span.icon { font-size: 20px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <!-- نافذة طلب الإشعارات -->
+    <div id="notificationModal" class="notification-modal-overlay hidden">
+        <div class="notification-dialog">
+            <h3 id="notifModalTitle">يرغب «جمعية» في إرسال إشعارات إليك</h3>
+            <p id="notifModalDesc">قد تتضمن الإشعارات التنبيهات والأصوات والشارات.</p>
+            <div class="notification-buttons">
+                <button class="notif-btn" id="btnDontAllow">عدم السماح</button>
+                <button class="notif-btn" id="btnAllow">سماح</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة استرجاع البيانات -->
+    <div id="restoreDataModal" class="notification-modal-overlay hidden">
+        <div class="notification-dialog" style="max-width: 330px;">
+            <h3>استرجاع البيانات</h3>
+            <p>توجد بيانات مسجلة مسبقاً بهذا الرقم، هل تود استرجاعها؟</p>
+            <div class="notification-buttons">
+                <button class="notif-btn" id="btnRestoreNo">لا (حساب جديد)</button>
+                <button class="notif-btn" id="btnRestoreYes">نعم (استرجاع)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة منسدلة لإنشاء جمعية أو مناسبة -->
+    <div id="addBottomSheet" class="bottom-sheet-overlay hidden">
+        <div class="bottom-sheet" onclick="event.stopPropagation()">
+            <h3 id="sheetTitle">ماذا تريد أن تنشئ؟</h3>
+            <div class="sheet-option" id="sheetOptGamaya">
+                <span class="icon">👥+</span>
+                <span id="sheetGamaya">إنشاء جمعية</span>
+            </div>
+            <div class="sheet-option" id="sheetOptOccasion">
+                <span class="icon">🎉</span>
+                <span id="sheetOccasion">إنشاء مناسبة</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل الاسم -->
+    <div id="editNameBottomSheet" class="bottom-sheet-overlay hidden">
+        <div class="bottom-sheet" onclick="event.stopPropagation()">
+            <h3 id="editNameSheetTitle">تعديل الاسم</h3>
+            <label id="lblEditFullName" style="text-align: right; margin-bottom: 6px;">الاسم بالكامل</label>
+            <input type="text" id="sheetUserNameInput" placeholder="الاسم بالكامل" style="margin-bottom: 15px;">
+            <button class="btn btn-green" id="btnSaveNameSheet">حفظ</button>
+        </div>
+    </div>
+
+    <div class="top-bar">
+        <button class="lang-btn" id="langToggleBtn">English</button>
+    </div>
+
+    <div class="container">
+        <div id="toastMsg">اختر وسيلة دفع واحدة على الأقل.</div>
+
+        <!-- 1. شاشة إدخال رقم الهاتف -->
+        <div id="phoneScreen" class="screen">
+            <div class="glass-card" style="text-align: center; margin-top: 30px;">
+                <div class="welcome-circle">🏦</div>
+                <h2 id="txtWelcome">مرحباً بك في يلا جمعية</h2>
+                <p id="txtPhoneDesc">اكتب رقم موبايلك علشان نبعتلُك رمز التحقق.</p>
+                <input type="text" id="phoneInput" placeholder="رقم الموبايل" maxlength="11" style="text-align: center;">
+                <button class="btn btn-green" id="btnSendOtp">إرسال الكود عبر واتساب</button>
+            </div>
+        </div>
+
+        <!-- 2. شاشة تأكيد الكود (OTP) -->
+        <div id="otpScreen" class="screen hidden">
+            <div class="glass-card" style="text-align: center; margin-top: 30px;">
+                <div class="welcome-circle">🔒</div>
+                <h2 id="txtOtpTitle">تأكيد رقم الموبايل</h2>
+                <p id="otpMsg">تم إرسال الرمز إلى الرقم...</p>
+                <input type="text" id="otpInput" maxlength="4" autocomplete="one-time-code" style="text-align: center;">
+                <button class="btn btn-green" id="btnVerifyOtp">تأكيد الكود</
+                    button>
+                <button class="btn btn-green-outline" id="btnBackToPhone">تعديل الرقم</button>
+                
+                <div id="resendContainer" style="margin-top: 15px; font-size: 13px; color: #94a3b8;">
+                    <span id="resendTimerText">إعادة إرسال الرمز بعد <span id="timerCount">30</span> ثانية</span>
+                    <button id="btnResendOtp" class="btn btn-green-outline hidden" style="margin-top: 8px; padding: 10px;">إعادة إرسال رمز التحقق</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. شاشة إكمال الملف الشخصي -->
+        <div id="profileScreen" class="screen hidden">
+            <div style="text-align: center; margin-top: 10px; margin-bottom: 15px;">
+                <h2 id="txtProfileHeaderTitle" style="font-size: 18px; color: #fff;">إكمال الملف الشخصي</h2>
+            </div>
+            <div class="glass-card">
+                <h2 id="txtProfileCardTitle">أكمل بياناتك</h2>
+                <p id="txtProfileCardDesc">اكتب اسمك علشان نجهز حسابك.</p>
+                
+                <label id="lblFullName">الاسم بالكامل</label>
+                <input type="text" id="userNameInput" placeholder="الاسم بالكامل">
+                <div id="errProfileName" class="error-msg">اكتب اسمك بالكامل.</div>
+                
+                <button class="btn btn-green" style="margin-top: 15px;" id="btnStartApp">التالي</button>
+            </div>
+        </div>
+
+        <!-- 4. شاشة رمز الحماية (PIN) -->
+        <div id="pinSetupScreen" class="screen hidden">
+            <div class="glass-card" style="text-align: center; margin-top: 20px;">
+                <div class="welcome-circle">🔐</div>
+                <h2 id="txtPinTitle">إنشاء رمز حماية (PIN)</h2>
+                <p id="txtPinDesc">أدخل رمز مكون من 4 أرقام لحماية حسابك</p>
+                
+                <div class="pin-inputs">
+                    <input type="password" maxlength="1" class="pin-digit-setup" />
+                    <input type="password" maxlength="1" class="pin-digit-setup" />
+                    <input type="password" maxlength="1" class="pin-digit-setup" />
+                    <input type="password" maxlength="1" class="pin-digit-setup" />
+                </div>
+                
+                <div id="errPin" class="error-msg" style="margin-top: 5px;">الرجاء إدخال 4 أرقام كاملة.</div>
+                
+                <button class="btn btn-green" style="margin-top: 15px;" id="btnSubmitPin">تأكيد الرمز</button>
+            </div>
+        </div>
+
+        <!-- 5. شاشة تسجيل الدخول بالـ PIN -->
+        <div id="pinLoginScreen" class="screen hidden">
+            <div class="glass-card" style="text-align: center; margin-top: 30px;">
+                <div class="welcome-circle">🔓</div>
+                <h2 id="txtLoginTitle">تسجيل الدخول</h2>
+                <p id="txtLoginDesc">أدخل رمز الحماية (PIN) لفتح التطبيق</p>
+                
+                <div class="pin-inputs">
+                    <input type="password" maxlength="1" class="pin-digit-login" />
+                    <input type="password" maxlength="1" class="pin-digit-login" />
+                    <input type="password" maxlength="1" class="pin-digit-login" />
+                    <input type="password" maxlength="1" class="pin-digit-login" />
+                </div>
+                
+                <div id="errLoginPin" class="error-msg" style="margin-top: 5px;">الرمز غير صحيح، حاول مرة أخرى.</div>
+                
+                <button class="btn btn-green" style="margin-top: 15px;" id="btnLogin">دخول</button>
+                
+                <div style="margin-top: 12px;">
+                    <span id="linkForgotPin" style="font-size: 13px; color: #38bdf8; cursor: pointer; text-decoration: underline;">هل نسيت كلمة المرور؟</span>
+                </div>
+
+                <button class="btn btn-green-outline" style="margin-top: 12px; font-size: 12px;" id="btnReset">تسجيل حساب برقم جديد؟</button>
+            </div>
+        </div>
+
+        <!-- 6. شاشة نسيت كلمة المرور -->
+        <div id="forgotPhoneScreen" class="screen hidden">
+            <div class="glass-card" style="text-align: center; margin-top: 30px;">
+                <div class="welcome-circle">🔄</div>
+                <h2>استعادة كلمة المرور</h2>
+                <p>اكتب رقم موبايلك المرتبط بحسابك لنبعث لك كود الاستعادة</p>
+                <input type="text" id="forgotPhoneInput" placeholder="رقم الموبايل" maxlength="11" style="text-align: center;">
+                <button class="btn btn-green" id="btnSendForgot">إرسال كود الاستعادة</button>
+                <button class="btn btn-green-outline" id="btnBackToLogin" style="margin-top: 8px;">العودة لتسجيل الدخول</button>
+            </div>
+        </div>
+
+        <!-- 7. شاشة تأكيد كود الاستعادة -->
+        <div id="forgotOtpScreen" class="screen hidden">
+            <div class="glass-card" style="text-align: center; margin-top: 30px;">
+                <div class="welcome-circle">📩</div>
+                <h2>تأكيد كود الاستعادة</h2>
+                <p id="forgotOtpMsg">تم إرسال كود الاستعادة إلى الرقم...</p>
+                <input type="text" id="forgotOtpInput" placeholder="أدخل كود الاستعادة المكون من 4 أرقام" maxlength="4" style="text-align: center;">
+                <button class="btn btn-green" id="btnVerifyForgot">تحقق من الكود</button>
+            </div>
+        </div>
+
+        <!-- 8. شاشة تعيين رمز PIN جديد -->
+        <div id="newPinScreen" class="screen hidden">
+            <div class="glass-card" style="text-align: center; margin-top: 20px;">
+                <div class="welcome-circle">🔑</div>
+                <h2>إنشاء رمز جديد</h2>
+                <p>أدخل رمز حماية (PIN) جديد مكون من 4 أرقام</p>
+                
+                <div class="pin-inputs">
+                    <input type="password" maxlength="1" class="pin-digit-new" />
+                    <input type="password" maxlength="1" class="pin-digit-new" />
+                    <input type="password" maxlength="1" class="pin-digit-new" />
+                    <input type="password" maxlength="1" class="pin-digit-new" />
+                </div>
+                <button class="btn btn-green" style="margin-top: 15px;" id="btnSaveNewPin">حفظ الرمز الجديد</button>
+            </div>
+        </div>
+
+        <!-- 9. الشاشة الرئيسية -->
+        <div id="dashboardScreen" class="screen hidden" style="text-align: center; padding-top: 15px;">
+            <div class="welcome-circle">💰</div>
+            <h2 id="dashTitle" style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">ابدأ رحلتك مع جمعية 👋</h2>
+            <p id="dashDesc" style="font-size: 13px; color: #cbd5e1; max-width: 280px; margin: 0 auto 30px; line-height: 1.6;">
+                أنشئ جمعيتك الأولى أو انضم لجمعية أصدقائك باستخدام كود الدعوة.
+            </p>
+            <button class="btn btn-green" id="btnOpenCreateSheet" style="margin-bottom: 12px;">+ إنشاء جمعية جديدة</button>
+            <button class="btn btn-green-outline" id="btnJoinDash">✉️ الانضمام بكود الدعوة</button>
+        </div>
+
+        <!-- 10. شاشة الانضمام بكود الدعوة -->
+        <div id="joinGamayaScreen" class="screen hidden" style="padding-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 id="joinHeaderTitle" style="font-size: 20px;">الانضمام بكود الدعوة</h2>
+                <span id="btnBackFromJoin" style="cursor: pointer; font-size: 20px; color: #a5b4fc;">❮</span>
+            </div>
+            <div class="glass-card" style="text-align: center; padding: 25px 20px;">
+                <h3 id="joinCardTitle" style="font-size: 18px; margin-bottom: 8px;">أدخل كود الدعوة</h3>
+                <p id="joinCardDesc" style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">ادخل كود الدعوة علشان تنضم.</p>
+                <input type="text" id="inviteCodeInput" placeholder="كود الدعوة" style="text-align: center; margin-bottom: 15px;">
+                <button class="btn btn-green" id="btnSubmitJoin">متابعة</button>
+            </div>
+        </div>
+
+        <!-- 11. شاشة جمعياتي -->
+        <div id="myGamayasScreen" class="screen hidden" style="text-align: center; padding-top: 10px;">
+            <h2 id="myGamayasTitle" style="font-size: 22px; margin-bottom: 20px;">الجمعيات</h2>
+            <div id="gamayasListContainer"></div>
+        </div>
+
+        <!-- 12. شاشة المناسبات -->
+        <div id="occasionsScreen" class="screen hidden" style="padding-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 id="occHeaderTitle" style="font-size: 20px;">المناسبات</h2>
+                <span id="btnJoinOccTop" style="cursor: pointer; font-size: 22px; color: #34d399;" title="الانضمام بكود المناسبة">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </span>
+            </div>
+            
+            <div class="tabs-header">
+                <div class="tab-item active" id="tabActive">النشطة</div>
+                <div class="tab-item" id="tabEnded">المنتهية</div>
+                <div class="tab-item" id="tabArchived">الأرشيف</div>
+            </div>
+
+            <div class="glass-card" style="text-align: center; padding: 30px 20px; margin-top: 15px;">
+                <div class="welcome-circle">🎉</div>
+                <h3 id="occEmptyTitle" style="font-size: 18px; margin-bottom: 8px;">لسه مفيش مناسبات</h3>
+                <p id="occEmptyDesc" style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">ابدأ بإنشاء مناسبة وادع أصحابك</p>
+                <button class="btn btn-green" id="btnCreateOcc" style="margin-bottom: 12px;">+ إنشاء المناسبة</button>
+                <button class="btn btn-green-outline" id="btnJoinOccBottom">الانضمام بكود الدعوة</button>
+            </div>
+        </div>
+
+        <!-- 13. شاشة إنشاء مناسبة -->
+        <div id="createOccasionScreen" class="screen hidden" style="padding-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 id="createOccHeader" style="font-size: 20px;">إنشاء مناسبة</h2>
+                <span id="btnBackToOcc" style="cursor: pointer; font-size: 20px; color: #a5b4fc;">❮</span>
+            </div>
+            <div class="glass-card">
+                <label id="lblOccTitle">عنوان المناسبة</label>
+                <input type="text" id="occTitle" placeholder="عنوان المناسبة">
+                <label id="lblOccDesc">الوصف (اختياري)</label>
+                <textarea id="occDesc" rows="3" placeholder="الوصف"></textarea>
+                <label id="lblOccDate">تاريخ المناسبة</label>
+                <input type="date" id="occDate">
+                <label id="lblOccContrib">نوع المساهمة</label>
+                <div class="contribution-type-box">
+                    <div class="contrib-option active" id="contribVariable">مبلغ حسب الرغبة</div>
+                    <div class="contrib-option" id="contribFixed">مبلغ ثابت</div>
+                </div>
+                <div id="fixedAmountContainer" class="hidden">
+                    <label id="lblRequiredAmount">المبلغ المطلوب</label>
+                    <input type="number" id="occAmount" placeholder="مثال: 500" min="1">
+                </div>
+                <label id="lblOccPhone">رقم الموبايل</label>
+                <input type="text" id="occPhone" placeholder="رقم الموبايل">
+                <button class="btn btn-green" id="btnSubmitOcc">إنشاء المناسبة</button>
+            </div>
+        </div>
+
+        <!-- 14. شاشة إنشاء جمعية -->
+        <div id="createGamayaScreen" class="screen hidden">
+            <div class="steps-header" id="stepsContainer"></div>
+            <div class="glass-card">
+                <div id="formStep1" class="form-step">
+                    <h2 id="fs1Title">البيانات الأساسية</h2>
+                    <p id="fs1Desc">اكتب بيانات الجمعية الأساسية.</p>
+                    <label id="lblGName">اسم الجمعية</label>
+                    <input type="text" id="gName" placeholder="مثال: جمعية العائلة">
+                    <div id="errName" class="error-msg">اكتب اسم الجمعية.</div>
+                    <label id="lblGDesc">وصف (اختياري)</label>
+                    <textarea id="gDesc" rows="2" placeholder="وصف الجمعية..."></textarea>
+                    <label id="lblGDate">تاريخ بدء الجمعية</label>
+                    <input type="date" id="gStartDate">
+                    <label id="lblGMonths">مدة الجمعية بالشهور</label>
+                    <select id="gMonths"></select>
+                    <label id="lblGMembers">عدد الأعضاء المتوقع</label>
+                    <input type="number" id="gMembersCount" placeholder="مثال: 5" min="2">
+                    <div id="errMembers" class="error-msg">لازم يكون عدد الأعضاء ٢ على الأقل.</div>
+                    <button class="btn btn-green" id="btnNext1">التالي</button>
+                </div>
+
+                <div id="formStep2" class="form-step hidden">
+                    <h2 id="fs2Title">الإعدادات المالية</h2>
+                    <p id="fs2Desc">حدد قيمة القسط الشهري للجمعية.</p>
+                    <label id="lblMonthlySub">الاشتراك الشهري</label>
+                    <input type="number" id="gAmount" placeholder="المبلغ الشهري" min="1">
+                    <div id="errAmount" class="error-msg">اكتب مبلغ أكبر من صفر.</div>
+                    <button class="btn btn-green" style="margin-top: 15px;" id="btnNext2">التالي</button>
+                    <button class="btn btn-green-outline" id="btnPrev2">السابق</button>
+                </div>
+
+                <div id="formStep3" class="form-step hidden">
+                    <h2 id="fs3Title">وسائل الدفع</h2>
+                    <p id="fs3Desc">اختر وسيلة واحدة على الأقل لاستلام دفعات أعضاء الجمعية.</p>
+                    <div class="payment-box">
+                        <div class="payment-header">
+                            <div class="payment-info"><h4>InstaPay</h4></div>
+                            <label class="switch"><input type="checkbox" id="payInstaToggle"><span class="slider"></span></label>
+                        </div>
+                        <div id="instaFields" class="payment-fields hidden">
+                            <input type="text" id="instaAccount" placeholder="رقم الموبايل أو عنوان InstaPay">
+                        </div>
+                    </div>
+                    <div class="payment-box">
+                        <div class="payment-header">
+                            <div class="payment-info"><h4>محفظة إلكترونية</h4></div>
+                            <label class="switch"><input type="checkbox" id="payWalletToggle"><span class="slider"></span></label>
+                        </div>
+                        <div id="walletFields" class="payment-fields hidden">
+                            <input type="text" id="walletNum" placeholder="رقم المحفظة">
+                        </div>
+                    </div>
+                    <div class="payment-box">
+                        <div class="payment-header">
+                            <div class="payment-info"><h4>تحويل بنكي</h4></div>
+                            <label class="switch"><input type="checkbox" id="payBankToggle"><span class="slider"></span></label>
+                        </div>
+                        <div id="bankFields" class="payment-fields hidden">
+                            <input type="text" id="bankName" placeholder="اسم البنك">
+                            <input type="text" id="bankAccNum" placeholder="رقم الحساب">
+                        </div>
+                    </div>
+                    <div class="payment-box">
+                        <div class="payment-header">
+                            <div class="payment-info"><h4>كاش</h4></div>
+                            <label class="switch"><input type="checkbox" id="payCashToggle"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    <button class="btn btn-green" id="btnNext3">التالي</button>
+                    <button class="btn btn-green-outline" id="btnPrev3">السابق</button>
+                </div>
+
+                <div id="formStep4" class="form-step hidden">
+                    <h2 id="fs4Title">مراجعة البيانات</h2>
+                    <p id="fs4Desc">تأكد من البيانات قبل إنشاء الجمعية.</p>
+                    <div id="reviewSummary"></div>
+                    <button class="btn btn-green" id="btnSubmitGamaya">إطلاق وتأكيد الجمعية 🚀</button>
+                    <button class="btn btn-green-outline" id="btnPrev4">السابق</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 15. تبويب المزيد -->
+        <div id="moreScreen" class="screen hidden" style="padding-top: 10px;">
+            <h2 id="moreHeaderTitle" style="font-size: 22px; margin-bottom: 20px; text-align: center;">المزيد</h2>
+            <div class="glass-card" style="padding: 10px 15px;">
+                <div class="more-item" id="navNotifications">
+                    <div class="more-item-right"><span>🔔</span><span id="moreNotif">الإشعارات</span></div>
+                    <div class="more-item-left">❮</div>
+                </div>
+                <div class="more-item" id="navReports">
+                    <div class="more-item-right"><span>📊</span><span id="moreReports">التقارير</span></div>
+                    <div class="more-item-left">❮</div>
+                </div>
+                <div class="more-item" id="navProfile">
+                    <div class="more-item-right"><span>👤</span><span id="moreProfile">الملف الشخصي</span></div>
+                    <div class="more-item-left">❮</div>
+                </div>
+                <div class="more-item" id="navLogout">
+                    <div class="more-item-right" style="color: #f87171;"><span>🚪</span><span>تسجيل الخروج</span></div>
+                    <div class="more-item-left" style="color: #f87171;">❮</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 16. شاشة الملف الشخصي -->
+        <div id="profileDetailsScreen" class="screen hidden" style="padding-top: 5px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span id="btnRefreshProfile" style="cursor: pointer; font-size: 18px; color: #a5b4fc;" title="تحديث الصفحة">🔄</span>
+                <h2 id="profileScreenMainTitle" style="font-size: 18px;">الملف الشخصي</h2>
+                <span id="btnBackToMoreFromProf" style="cursor: pointer; font-size: 20px; color: #a5b4fc;">❯</span>
+            </div>
+
+            <div class="glass-card" style="text-align: center; padding: 20px 15px; margin-bottom: 12px;">
+                <div class="welcome-circle" style="width: 70px; height: 70px; font-size: 28px; margin: 0 auto 10px;">
+                    👤
+                </div>
+                <h3 id="profileDisplayName" style="font-size: 16px; margin-bottom: 4px; color: #fff;">أحمد الغرابلي</h3>
+                <p id="profileDisplayPhone" style="font-size: 12px; color: #94a3b8; margin-bottom: 0;" dir="ltr">20101411128+</p>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <div class="glass-card" style="flex: 1; text-align: center; padding: 12px 5px; margin-bottom: 0;">
+                    <div id="statTotal" style="font-size: 18px; font-weight: bold; color: #34d399; margin-bottom: 4px;">0</div>
+                    <div style="font-size: 10px; color: #94a3b8;">إجمالي الجمعيات</div>
+                </div>
+                <div class="glass-card" style="flex: 1; text-align: center; padding: 12px 5px; margin-bottom: 0;">
+                    <div id="statJoined" style="font-size: 18px; font-weight: bold; color: #38bdf8; margin-bottom: 4px;">0</div>
+                    <div style="font-size: 10px; color: #94a3b8;">جمعيات منضم</div>
+                </div>
+                <div class="glass-card" style="flex: 1; text-align: center; padding: 12px 5px; margin-bottom: 0;">
+                    <div id="statOwned" style="font-size: 18px; font-weight: bold; color: #facc15; margin-bottom: 4px;">0</div>
+                    <div style="font-size: 10px; color: #94a3b8;">جمعيات مملوكة</div>
+                </div>
+            </div>
+
+            <div class="glass-card" style="padding: 5px 15px;">
+                <div class="more-item" id="btnOpenEditName">
+                    <div class="more-item-right"><span>✏️</span><span>تعديل الاسم</span></div>
+                    <div class="more-item-left">❮</div>
+                </div>
+                <div class="more-item" id="btnProfileLogout" style="border-bottom: none;">
+                    <div class="more-item-right" style="color: #f87171;"><span>🚪</span><span>تسجيل الخروج</span></div>
+                    <div class="more-item-left" style="color: #f87171;">❮</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 17. التقارير -->
+        <div id="reportsScreen" class="screen hidden" style="padding-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 id="reportsScreenTitle" style="font-size: 20px;">التقارير</h2>
+                <span id="btnBackToMoreFromRep" style="cursor: pointer; font-size: 20px; color: #a5b4fc;">❮</span>
+            </div>
+            <div id="reportsListContainer"></div>
+        </div>
+
+        <!-- 18. الإشعارات -->
+        <div id="notificationsScreen" class="screen hidden" style="padding-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <span id="notifReadAll" style="cursor: pointer; font-size: 13px; color: #34d399; font-weight: bold;">قراءة الكل</span>
+                <h2 id="notifScreenTitle" style="font-size: 20px;">الإشعارات</h2>
+                <span id="btnBackToMoreFromNotif" style="cursor: pointer; font-size: 20px; color: #a5b4fc;">❮</span>
+            </div>
+            <div id="notificationsListContainer"></div>
+        </div>
+    </div>
+
+    <!-- الشريط السفلي -->
+    <div class="bottom-nav hidden" id="bottomNav">
+        <div class="nav-item active" id="navItemHome">
+            <span class="icon">🏠</span><span id="navHome">الرئيسية</span>
+        </div>
+        <div class="nav-item" id="navItemMyGamayas">
+            <span class="icon">🏛️</span><span id="navMyGamayas">جمعياتي</span>
+        </div>
+        <div class="nav-item" id="navItemAdd">
+            <span class="icon">➕</span><span id="navAdd">إضافة</span>
+        </div>
+        <div class="nav-item" id="navItemOccasions">
+            <span class="icon">🎉</span><span id="navOccasions">مناسبات</span>
+        </div>
+        <div class="nav-item" id="navItemMore">
+            <span class="icon">☰</span><span id="navMore">المزيد</span>
+        </div>
+    </div>
+
+    <!-- نافذة تأكيد تسجيل الخروج المخصصة 3D Glass -->
+    <div id="customConfirmModal" class="notification-modal-overlay hidden">
+        <div class="notification-dialog" style="max-width: 330px; text-align: center;">
+            <div class="welcome-circle" style="width: 65px; height: 65px; font-size: 26px; margin-bottom: 12px;">🛡️</div>
+            <h3>تأكيد تسجيل الخروج</h3>
+            <p style="margin: 12px 0 20px; color: #cbd5e1;">هل تريد فعلاً تسجيل الخروج ومسح ملف الحساب؟</p>
+            <div class="notification-buttons" style="display: flex; gap: 10px; justify-content: center; padding-top: 12px;">
+                <button id="btnConfirmLogout" class="btn btn-green" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); margin-top: 0;">نعم</button>
+                <button id="btnCancelLogout" class="btn btn-green-outline" style="margin-top: 0;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://jvhisnbkjsvkizvqjnuk.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_uzWhyqGlwFl5b2all...'; // حط المفتاح الكامل هنا
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentPhone = localStorage.getItem('gamaya_phone') || '';
+        let currentUserName = localStorage.getItem('gamaya_username') || 'مستخدم جديد';
+        let currentLang = localStorage.getItem('gamaya_lang') || 'ar';
+        let currentStepNum = 1;
+        let currentContributionType = 'variable';
+        let joinModeType = 'gamaya';
+        let firstEnteredPin = '';
+        let isConfirmingPin = false;
+        let countdownInterval;
+        let pendingPhone = '';
+        let forgotTargetPhone = '';
+
+        const translations = {
+            ar: {
+                langBtn: 'English',
+                welcome: 'مرحباً بك في يلا جمعية',
+                phoneDesc: 'اكتب رقم موبايلك علشان نبعتلُك رمز التحقق.',
+                sendOtp: 'إرسال الكود عبر واتساب',
+                otpTitle: 'تأكيد رقم الموبايل',
+                verifyOtp: 'تأكيد الكود',
+                backToPhone: 'تعديل الرقم',
+                profileHeaderTitle: 'إكمال الملف الشخصي',
+                profileCardTitle: 'أكمل بياناتك',
+                profileCardDesc: 'اكتب اسمك علشان نجهز حسابك.',
+                lblFullName: 'الاسم بالكامل',
+                phFullName: 'الاسم بالكامل',
+                btnStartApp: 'التالي',
+                pinTitle: 'إنشاء رمز حماية (PIN)',
+                pinDesc: 'أدخل رمز مكون من 4 أرقام لحماية حسابك',
+                pinConfirmDesc: 'أعد إدخال الرمز للتأكيد مرة أخرى',
+                pinErrorMatch: 'الرمزين غير متطابقين، حاول مرة أخرى',
+                btnSubmitPin: 'تأكيد الرمز',
+                loginTitle: 'تسجيل الدخول',
+                loginDesc: 'أدخل رمز الحماية (PIN) لفتح التطبيق',
+                btnLogin: 'دخول',
+                btnReset: 'تسجيل حساب برقم جديد؟',
+                dashTitle: 'ابدأ رحلتك مع جمعية 👋',
+                dashDesc: 'أنشئ جمعيتك الأولى أو انضم لجمعية أصدقائك باستخدام كود الدعوة.',
+                btnOpenCreateSheet: '+ إنشاء جمعية جديدة',
+                btnJoinDash: '✉️ الانضمام بكود الدعوة',
+                joinHeaderTitle: 'الانضمام بكود الدعوة',
+                joinCardTitle: 'أدخل كود الدعوة',
+                joinCardDesc: 'ادخل كود الدعوة علشان تنضم.',
+                btnSubmitJoin: 'متابعة',
+                myGamayasTitle: 'الجمعيات',
+                occHeaderTitle: 'المناسبات',
+                tabActive: 'النشطة',
+                tabEnded: 'المنتهية',
+                tabArchived: 'الأرشيف',
+                occEmptyTitle: 'لسه مفيش مناسبات',
+                occEmptyDesc: 'ابدأ بإنشاء مناسبة وادع أصحابك',
+                btnCreateOcc: '+ إنشاء المناسبة',
+                btnJoinOccBottom: 'الانضمام بكود الدعوة',
+                createOccHeader: 'إنشاء مناسبة',
+                lblOccTitle: 'عنوان المناسبة',
+                lblOccDesc: 'الوصف (اختياري)',
+                lblOccDate: 'تاريخ المناسبة',
+                lblOccContrib: 'نوع المساهمة',
+                contribFixed: 'مبلغ ثابت',
+                contribVariable: 'مبلغ حسب الرغبة',
+                lblRequiredAmount: 'المبلغ المطلوب',
+                lblOccPhone: 'رقم الموبايل',
+                btnSubmitOcc: 'إنشاء المناسبة',
+                moreHeaderTitle: 'المزيد',
+                moreNotif: 'الإشعارات',
+                moreReports: 'التقارير',
+                moreProfile: 'الملف الشخصي',
+                reportsScreenTitle: 'التقارير المفصلة',
+                reportsEmptyTitle: 'مفيش تقارير متاحة',
+                reportsEmptyDesc: 'انضم لجمعية أو أنشئ جمعية جديدة علشان تشوف تقاريرها.',
+                btnCreateGamayaRep: '+ إنشاء جمعية',
+                notifScreenTitle: 'الإشعارات',
+                notifReadAll: 'قراءة الكل',
+                notifEmpty: 'لا توجد إشعارات جديدة حالياً',
+                steps: ['الأساسية', 'الإعدادات المالية', 'وسائل الدفع', 'المراجعة'],
+                fs1Title: 'البيانات الأساسية', fs1Desc: 'اكتب بيانات الجمعية الأساسية.',
+                lblGName: 'اسم الجمعية', phGName: 'مثال: جمعية العائلة',
+                lblGDesc: 'وصف (اختياري)', phGDesc: 'وصف الجمعية...',
+                lblGDate: 'تاريخ بدء الجمعية',
+                lblGMonths: 'مدة الجمعية بالشهور',
+                lblGMembers: 'عدد الأعضاء المتوقع', phGMembers: 'مثال: 5',
+                btnNext: 'التالي', btnPrev: 'السابق',
+                fs2Title: 'الإعدادات المالية', fs2Desc: 'حدد قيمة القسط الشهري للجمعية.',
+                lblMonthlySub: 'الاشتراك الشهري', phAmount: 'المبلغ الشهري',
+                fs3Title: 'وسائل الدفع', fs3Desc: 'اختر وسيلة واحدة على الأقل لاستلام دفعات أعضاء الجمعية.',
+                fs4Title: 'مراجعة البيانات', fs4Desc: 'تأكد من البيانات قبل إنشاء الجمعية.',
+                btnSubmitGamaya: 'إطلاق وتأكيد الجمعية 🚀',
+                navHome: 'الرئيسية', navMyGamayas: 'جمعياتي', navAdd: 'إضافة', navOccasions: 'مناسبات', navMore: 'المزيد',
+                sheetTitle: 'ماذا تريد أن تنشئ؟',
+                sheetGamaya: 'إنشاء جمعية',
+                sheetOccasion: 'إنشاء مناسبة',
+                phonePlaceholder: 'رقم الموبايل', otpPlaceholder: 'أدخل الكود المكون من 4 أرقام',
+                toastChooseOne: 'اختر وسيلة دفع واحدة على الأقل',
+                otpMsgText: 'تم إرسال الرمز إلي الرقم',
+                resendTimerText: 'إعادة إرسال الرمز بعد',
+                resendNewCode: 'إعادة إرسال رمز جديد',
+                resendOtpBtn: '  إعادة إرسال رمز التحقق.'
+            },
+            en: {
+                langBtn: 'العربية',
+                welcome: 'Welcome to Yalla Gamaya',
+                phoneDesc: 'Enter your phone number to receive verification code',
+                sendOtp: 'Send Code via WhatsApp',
+                otpTitle: 'Verify Mobile Number',
+                verifyOtp: 'Verify Code',
+                backToPhone: 'Edit Number',
+                profileHeaderTitle: 'Complete Profile',
+                profileCardTitle: 'Complete your details',
+                profileCardDesc: 'Write your name to prepare your account.',
+                lblFullName: 'Full Name',
+                phFullName: 'Full Name',
+                btnStartApp: 'Next',
+                pinTitle: 'Create PIN Code',
+                pinDesc: 'Enter a 4-digit code to secure your account',
+                pinConfirmDesc: 'Re-enter your PIN to confirm',
+                pinErrorMatch: 'PINs do not match, please try again',
+                btnSubmitPin: 'Confirm PIN',
+                loginTitle: 'Sign In',
+                loginDesc: 'Enter PIN to unlock app',
+                btnLogin: 'Login',
+                btnReset: 'Register new account?',
+                dashTitle: 'Start your journey with Gamaya 👋',
+                dashDesc: 'Create your first gamaya or join friends using invite code.',
+                btnOpenCreateSheet: '+ Create New Gamaya',
+                btnJoinDash: '✉️ Join by Invite Code',
+                joinHeaderTitle: 'Join by Invite Code',
+                joinCardTitle: 'Enter Invite Code',
+                joinCardDesc: 'Enter the invite code to join.',
+                btnSubmitJoin: 'Continue',
+                myGamayasTitle: 'Gamayas',
+                occHeaderTitle: 'Occasions',
+                tabActive: 'Active',
+                tabEnded: 'Ended',
+                tabArchived: 'Archived',
+                occEmptyTitle: 'No occasions yet',
+                occEmptyDesc: 'Start by creating an occasion and invite friends',
+                btnCreateOcc: '+ Create Occasion',
+                btnJoinOccBottom: 'Join by Invite Code',
+                createOccHeader: 'Create Occasion',
+                lblOccTitle: 'Occasion Title',
+                lblOccDesc: 'Description (Optional)',
+                lblOccDate: 'Occasion Date',
+                lblOccContrib: 'Contribution Type',
+                contribFixed: 'Fixed Amount',
+                contribVariable: 'Variable Amount',
+                lblRequiredAmount: 'Required Amount',
+                lblOccPhone: 'Mobile Number',
+                btnSubmitOcc: 'Create Occasion',
+                moreHeaderTitle: 'More',
+                moreNotif: 'Notifications',
+                moreReports: 'Reports',
+                moreProfile: 'Profile',
+                reportsScreenTitle: 'Detailed Reports',
+                reportsEmptyTitle: 'No reports available',
+                reportsEmptyDesc: 'Join or create a gamaya to view reports.',
+                btnCreateGamayaRep: '+ Create Gamaya',
+                notifScreenTitle: 'Notifications',
+                notifReadAll: 'Read All',
+                notifEmpty: 'No new notifications right now',
+                steps: ['Basic', 'Financial', 'Payment', 'Review'],
+                fs1Title: 'Basic Information', fs1Desc: 'Write basic details of the gamaya.',
+                lblGName: 'Gamaya Name', phGName: 'Ex: Family Gamaya',
+                lblGDesc: 'Description (Optional)', phGDesc: 'Write details...',
+                lblGDate: 'Start Date',
+                lblGMonths: 'Duration (Months)',
+                lblGMembers: 'Expected Members', phGMembers: 'Ex: 5',
+                btnNext: 'Next', btnPrev: 'Back',
+                fs2Title: 'Financial Settings', fs2Desc: 'Set monthly subscription amount.',
+                lblMonthlySub: 'Monthly Subscription', phAmount: 'Monthly Amount',
+                fs3Title: 'Payment Methods', fs3Desc: 'Choose at least one method to receive member payments.',
+                fs4Title: 'Review Data', fs4Desc: 'Make sure of data before creating gamaya.',
+                btnSubmitGamaya: 'Launch & Confirm Gamaya 🚀',
+                navHome: 'Home', navMyGamayas: 'My Gamayas', navAdd: 'Add', navOccasions: 'Occasions', navMore: 'More',
+                sheetTitle: 'What do you want to create?',
+                sheetGamaya: 'Create Gamaya',
+                sheetOccasion: 'Create Occasion',
+                phonePlaceholder: 'Mobile Number', otpPlaceholder: 'Enter 4-digit code',
+                toastChooseOne: 'Choose at least one payment method',
+                otpMsgText: 'Code sent to number',
+                resendOtpBtn: 'Resend Verification Code',
+                resendTimerText: 'Resend code in',
+                resendNewCode: 'Resend new code.'
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('gamaya_lang', lang);
+            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', lang);
+            updateTexts();
+        }
+
+        function updateTexts() {
+            const t = translations[currentLang];
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
+            
+            safeSet('langToggleBtn', t.langBtn);
+            safeSet('txtWelcome', t.welcome);
+            safeSet('txtPhoneDesc', t.phoneDesc);
+            safeSet('btnSendOtp', t.sendOtp);
+            safeSet('txtOtpTitle', t.otpTitle);
+            safeSet('btnVerifyOtp', t.verifyOtp);
+            safeSet('btnBackToPhone', t.backToPhone);
+            safeSet('otpMsg', `${t.otpMsgText} ${typeof phone !== 'undefined' ? phone : ''}`);
+            safeSet('btnResendOtp', t.resendOtpBtn);
+
+            safeSet('txtProfileHeaderTitle', t.profileHeaderTitle);
+            safeSet('txtProfileCardTitle', t.profileCardTitle);
+            safeSet('txtProfileCardDesc', t.profileCardDesc);
+            safeSet('lblFullName', t.lblFullName);
+            const userNameInput = document.getElementById('userNameInput');
+            if(userNameInput) userNameInput.placeholder = t.phFullName;
+            safeSet('btnStartApp', t.btnStartApp);
+
+            safeSet('txtPinTitle', t.pinTitle);
+            safeSet('txtPinDesc', t.pinDesc);
+            safeSet('btnSubmitPin', t.btnSubmitPin);
+
+            safeSet('txtLoginTitle', t.loginTitle);
+            safeSet('txtLoginDesc', t.loginDesc);
+            safeSet('btnLogin', t.btnLogin);
+            safeSet('btnReset', t.btnReset);
+
+            safeSet('dashTitle', t.dashTitle);
+            safeSet('dashDesc', t.dashDesc);
+            safeSet('btnOpenCreateSheet', t.btnOpenCreateSheet);
+            safeSet('btnJoinDash', t.btnJoinDash);
+
+            safeSet('joinHeaderTitle', t.joinHeaderTitle);
+            safeSet('joinCardTitle', t.joinCardTitle);
+            safeSet('joinCardDesc', t.joinCardDesc);
+            safeSet('btnSubmitJoin', t.btnSubmitJoin);
+
+            safeSet('myGamayasTitle', t.myGamayasTitle);
+            safeSet('occHeaderTitle', t.occHeaderTitle);
+            safeSet('tabActive', t.tabActive);
+            safeSet('tabEnded', t.tabEnded);
+            safeSet('tabArchived', t.tabArchived);
+            safeSet('occEmptyTitle', t.occEmptyTitle);
+            safeSet('occEmptyDesc', t.occEmptyDesc);
+            safeSet('btnCreateOcc', t.btnCreateOcc);
+            safeSet('btnJoinOccBottom', t.btnJoinOccBottom);
+
+            safeSet('createOccHeader', t.createOccHeader);
+            safeSet('lblOccTitle', t.lblOccTitle);
+            safeSet('lblOccDesc', t.lblOccDesc);
+            safeSet('lblOccDate', t.lblOccDate);
+            safeSet('lblOccContrib', t.lblOccContrib);
+            safeSet('contribFixed', t.contribFixed);
+            safeSet('contribVariable', t.contribVariable);
+            safeSet('lblRequiredAmount', t.lblRequiredAmount);
+            safeSet('lblOccPhone', t.lblOccPhone);
+            safeSet('btnSubmitOcc', t.btnSubmitOcc);
+
+            safeSet('moreHeaderTitle', t.moreHeaderTitle);
+            safeSet('moreNotif', t.moreNotif);
+            safeSet('moreReports', t.moreReports);
+            safeSet('moreProfile', t.moreProfile);
+
+            safeSet('reportsScreenTitle', t.reportsScreenTitle);
+            safeSet('notifScreenTitle', t.notifScreenTitle);
+            safeSet('notifReadAll', t.notifReadAll);
+
+            safeSet('sheetTitle', t.sheetTitle);
+            safeSet('sheetGamaya', t.sheetGamaya);
+            safeSet('sheetOccasion', t.sheetOccasion);
+
+            safeSet('fs1Title', t.fs1Title);
+            safeSet('fs1Desc', t.fs1Desc);
+            safeSet('lblGName', t.lblGName);
+            const gName = document.getElementById('gName');
+            if(gName) gName.placeholder = t.phGName;
+            safeSet('lblGDesc', t.lblGDesc);
+            const gDesc = document.getElementById('gDesc');
+            if(gDesc) gDesc.placeholder = t.phGDesc;
+            safeSet('lblGDate', t.lblGDate);
+            safeSet('lblGMonths', t.lblGMonths);
+            safeSet('lblGMembers', t.lblGMembers);
+            const gMembersCount = document.getElementById('gMembersCount');
+            if(gMembersCount) gMembersCount.placeholder = t.phGMembers;
+            safeSet('btnNext1', t.btnNext);
+
+            safeSet('fs2Title', t.fs2Title);
+            safeSet('fs2Desc', t.fs2Desc);
+            safeSet('lblMonthlySub', t.lblMonthlySub);
+            const gAmount = document.getElementById('gAmount');
+            if(gAmount) gAmount.placeholder = t.phAmount;
+            safeSet('btnNext2', t.btnNext);
+            safeSet('btnPrev2', t.btnPrev);
+
+            safeSet('fs3Title', t.fs3Title);
+            safeSet('fs3Desc', t.fs3Desc);
+            safeSet('btnNext3', t.btnNext);
+            safeSet('btnPrev3', t.btnPrev);
+
+            safeSet('fs4Title', t.fs4Title);
+            safeSet('fs4Desc', t.fs4Desc);
+            safeSet('btnSubmitGamaya', t.btnSubmitGamaya);
+            safeSet('btnPrev4', t.btnPrev);
+
+            safeSet('navHome', t.navHome);
+            safeSet('navMyGamayas', t.navMyGamayas);
+            safeSet('navAdd', t.navAdd);
+            safeSet('navOccasions', t.navOccasions);
+            safeSet('navMore', t.navMore);
+
+            const phoneInput = document.getElementById('phoneInput');
+            if(phoneInput) phoneInput.placeholder = t.phonePlaceholder;
+            const otpInput = document.getElementById('otpInput');
+            if(otpInput) otpInput.placeholder = t.otpPlaceholder;
+            safeSet('toastMsg', t.toastChooseOne);
+
+            renderSteps();
+            updateMonthsDropdown();
+        }
+
+        function checkNotificationPermission() {
+            const hasChosenNotif = localStorage.getItem('gamaya_notif_choice');
+            if (!hasChosenNotif && 'Notification' in window && Notification.permission === 'default') {
+                document.getElementById('notificationModal').classList.remove('hidden');
+            }
+        }
+
+        function checkInitialAppState() {
+            const savedPin = localStorage.getItem('app_secure_pin');
+            const savedName = localStorage.getItem('gamaya_username');
+
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('addBottomSheet').classList.add('hidden');
+            document.getElementById('editNameBottomSheet').classList.add('hidden');
+            document.getElementById('restoreDataModal').classList.add('hidden');
+
+            if (savedPin) {
+                if (savedName) currentUserName = savedName;
+                document.getElementById('pinLoginScreen').classList.remove('hidden');
+                document.getElementById('bottomNav').classList.add('hidden');
+                const loginInputs = document.querySelectorAll('.pin-digit-login');
+                if(loginInputs.length > 0) loginInputs[0].focus();
+            } else {
+                document.getElementById('phoneScreen').classList.remove('hidden');
+                document.getElementById('bottomNav').classList.add('hidden');
+            }
+        }
+
+        function togglePaymentFields(type) {
+            const toggle = document.getElementById(`pay${type.charAt(0).toUpperCase() + type.slice(1)}Toggle`);
+            const fields = document.getElementById(`${type}Fields`);
+            if(toggle && fields) {
+                if(toggle.checked) fields.classList.remove('hidden');
+                else fields.classList.add('hidden');
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastMsg');
+            if(toast) {
+                toast.innerText = msg; toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            }
+        }
+
+        function renderSteps() {
+            const container = document.getElementById('stepsContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            const t = translations[currentLang];
+            let indices = currentLang === 'ar' ? [0, 1, 2, 3] : [3, 2, 1, 0];
+
+            indices.forEach(i => {
+                const stepNum = i + 1;
+                const isActive = currentStepNum === stepNum ? 'active' : '';
+                container.innerHTML += `
+                    <div class="step-item ${isActive}">
+                        <div class="step-circle">${stepNum}</div>
+                        <span>${t.steps[i]}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function updateMonthsDropdown() {
+            const select = document.getElementById('gMonths');
+            if(!select) return;
+            const currentVal = select.value || 12;
+            select.innerHTML = '';
+            for(let i = 1; i <= 36; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.innerText = currentLang === 'ar' ? `${i} شهر` : `${i} Month${i > 1 ? 's' : ''}`;
+                if(i == currentVal) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+    let otpTimerInterval = null;
+    let otpCreatedAt = null;
+
+function startOtpTimer() {
+    let secondsLeft = 30; // 30 ثانية للعداد
+    const resendBtn = document.getElementById('btnResendOtp');
+    
+    otpCreatedAt = Date.now(); // وقت بداية الصلاحية
+    
+    if (otpTimerInterval) clearInterval(otpTimerInterval);
+    
+    if (resendBtn) {
+        resendBtn.disabled = true;
+        resendBtn.style.opacity = "0.5";
+    }
+    
+    otpTimerInterval = setInterval(() => {
+        secondsLeft--;
+        
+        if (resendBtn) {
+            const t = translations[currentLang];
+            if (secondsLeft > 0) {
+                resendBtn.innerText = `${t.resendTimerText} ${secondsLeft} ${currentLang === 'ar' ? 'ثانية' : 'seconds'}`;
+            } else {
+                resendBtn.innerText = t.resendNewCode;
+            }
+        }
+        
+        if (secondsLeft <= 0) {
+            clearInterval(otpTimerInterval);
+            if (resendBtn) {
+                resendBtn.disabled = false;
+                resendBtn.style.opacity = "1";
+                const t = translations[currentLang];
+                resendBtn.innerText = t.resendNewCode;
+            }
+        }
+    }, 1000);
+}
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage(currentLang);
+            checkNotificationPermission();
+            checkInitialAppState();
+
+            document.getElementById('langToggleBtn').addEventListener('click', () => {
+                setLanguage(currentLang === 'ar' ? 'en' : 'ar');
+            });
+
+            document.getElementById('btnAllow').addEventListener('click', async () => {
+                document.getElementById('notificationModal').classList.add('hidden');
+                localStorage.setItem('gamaya_notif_choice', 'granted');
+                try { if ('Notification' in window) await Notification.requestPermission(); } catch (e) {}
+            });
+
+            document.getElementById('btnDontAllow').addEventListener('click', () => {
+                document.getElementById('notificationModal').classList.add('hidden');
+                localStorage.setItem('gamaya_notif_choice', 'denied');
+            });
+
+            document.getElementById('btnSendOtp').addEventListener('click', async () => {
+    const phoneInput = document.getElementById('phoneInput');
+    const phone = phoneInput.value.trim();
+    
+    if (!phone) {
+        showAppToast(currentLang === 'ar' ? 'الرجاء إدخال رقم الهاتف' : 'Please enter phone number', 'error');
+    return;
+}
+
+    try {
+        const response = await fetch('/api/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            // لو السيرفر بيرجع إن الحساب موجود مسبقاً
+            if (data.exists || data.hasAccount) {
+                const restoreConfirmed = confirm(currentLang === 'ar' ? 
+                    'هذا الرقم مسجل مسبقاً، هل تريد استرجاع حسابك القديم؟' : 
+                    'This phone number is already registered. Do you want to restore your existing account?');
+                
+                if (!restoreConfirmed) {
+                    return; // لو رفض، يوقف العملية
+                }
+            }
+
+            pendingPhone = phone;
+            phoneInput.value = ''; // مسح الرقم لمنع التداخل
+            
+            const activeLang = document.documentElement.getAttribute('lang') || currentLang;
+            document.getElementById('otpMsg').innerText = (activeLang === 'ar' ? 'تم إرسال الرمز إلى الرقم ' : 'Code sent to ') + phone;
+            document.getElementById('phoneScreen').classList.add('hidden');
+            document.getElementById('otpScreen').classList.remove('hidden');
+            startOtpTimer();
+            
+            startOtpTimer();
+        } else {
+showAppToast(data.message || (currentLang === 'ar' ? 'حدث خطأ، تأكد من صحة الرقم' : 'Error...'), 'error');        }
+    } catch (error) {
+        console.error('Error:', error);
+showAppToast(currentLang === 'ar' ? 'تعذر الاتصال بالسيرفر' : 'Server connection failed', 'error');    }
+});
+
+let otpTimerInterval = null;
+let otpCreatedAt = null;
+
+function startOtpTimer() {
+    let timeLeft = 30;
+    const timerCount = document.getElementById('timerCount');
+    const resendTimerText = document.getElementById('resendTimerText');
+    const btnResendOtp = document.getElementById('btnResendOtp'); // بالـ O الكابتل المضبوطة
+    
+    if (resendTimerText && btnResendOtp && timerCount) {
+        resendTimerText.style.display = 'inline';
+        btnResendOtp.classList.add('hidden');
+        timerCount.innerText = timeLeft;
+
+        if (countdownInterval) clearInterval(countdownInterval);
+
+        countdownInterval = setInterval(() => {
+            timeLeft--;
+            
+            if (timeLeft > 0) {
+                timerCount.innerText = timeLeft;
+            } else {
+                timerCount.innerText = 0;
+                clearInterval(countdownInterval);
+                resendTimerText.style.display = 'none';
+                
+                // إظهار الزرار وإعطاؤه اللون الأخضر الممتلئ مباشرة
+                btnResendOtp.classList.remove('hidden');
+                btnResendOtp.style.background = '#059669';
+                btnResendOtp.style.color = '#ffffff';
+            }
+        }, 1000);
+    }
+}
+
+// استدعاء الدالة لتشغيل العداد أول ما الشاشة تفتح
+startOtpTimer();
+
+// حدث الضغط على زر إعادة الإرسال الفعلي
+document.getElementById('btnResendOtp').addEventListener('click', async () => {
+    startOtpTimer();
+    
+    try {
+        const phone = pendingPhone || document.getElementById('phoneInput').value.trim();
+        const response = await fetch('/api/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            showAppToast(currentLang === 'ar' ? 'تم إرسال الرمز بنجاح عبر الواتساب' : 'Code sent successfully via WhatsApp', 'success');
+        } else {
+            alert(data.message || 'حدث خطأ أثناء إعادة الإرسال');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(currentLang === 'ar' ? 'تعذر الاتصال بالسيرفر' : 'Server connection failed');
+    }
+});
+
+document.getElementById('btnVerifyOtp').addEventListener('click', async () => {
+    console.log("تم الضغط على زر تأكيد الكود بنجاح!");
+    try {
+        const otpInput = document.getElementById('otpInput');
+        if (!otpInput) return;
+        
+        const code = otpInput.value.trim();
+        if (!code || code.length < 4) {
+            showAppToast(currentLang === 'ar' ? 'يرجى إدخال رمز التحقق كاملاً' : 'Please enter the full verification code');
+            return;
+        }
+
+        const currentTime = Date.now();
+        if (typeof otpCreatedat !== 'undefined' && otpCreatedat && (currentTime - otpCreatedat > 60000)) {
+            showAppToast(currentLang === 'ar' ? 'تم انتهاء صلاحية الكود، اطلب كود جديد' : 'OTP expired, request a new one');
+            otpInput.value = '';
+            return;
+        }
+
+        const response = await fetch('/api/verify-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: typeof pendingPhone !== 'undefined' ? pendingPhone : '', code: code })
+        });
+        
+        console.log("حالة الاستجابة من السيرفر:", response.status);
+        
+        const data = await response.json();
+        console.log("بيانات الاستجابة:", data);
+        
+        if (data.success) {
+            currentPhone = pendingPhone;
+            localStorage.setItem('gamaya_phone', currentPhone);
+            
+            // هنا كود إخفاء شاشة الـ OTP وإظهار الشاشة التالية (مثلاً الشاشة الرئيسية أو الملف الشخصي)
+            document.getElementById('otpScreen').classList.add('hidden'); // غير اسم شاشة الـ OTP لو مختلفة عندك
+            document.getElementById('profileScreen').classList.remove('hidden'); // شاشة الحساب أو الرئيسية
+        } else {
+            showAppToast(data.message || (currentLang === 'ar' ? 'كود غير صحيح' : 'Invalid code'));
+        }
+    } catch (err) {
+        console.error(err);
+        showAppToast(currentLang === 'ar' ? 'حدث خطأ ما، لمحاولة لاحقاً' : 'An error occurred, try again later');
+    }
+});
+
+            document.getElementById('btnRestoreNo').addEventListener('click', () => {
+                document.getElementById('restoreDataModal').classList.add('hidden');
+                currentPhone = pendingPhone;
+                localStorage.setItem('gamaya_phone', currentPhone);
+                localStorage.removeItem(`backup_name_${pendingPhone}`);
+                localStorage.removeItem(`backup_pin_${pendingPhone}`);
+                document.getElementById('profileScreen').classList.remove('hidden');
+            });
+
+            document.getElementById('btnRestoreYes').addEventListener('click', () => {
+                document.getElementById('restoreDataModal').classList.add('hidden');
+                currentPhone = pendingPhone;
+                localStorage.setItem('gamaya_phone', currentPhone);
+                currentUserName = localStorage.getItem(`backup_name_${currentPhone}`) || 'أحمد الغرابلي';
+                localStorage.setItem('gamaya_username', currentUserName);
+                const restoredPin = localStorage.getItem(`backup_pin_${currentPhone}`);
+                localStorage.setItem('app_secure_pin', restoredPin);
+                document.getElementById('dashboardScreen').classList.remove('hidden');
+                document.getElementById('bottomNav').classList.remove('hidden');
+            });
+
+            document.getElementById('btnBackToPhone').addEventListener('click', () => {
+                clearInterval(countdownInterval);
+                document.getElementById('otpScreen').classList.add('hidden');
+                document.getElementById('phoneScreen').classList.remove('hidden');
+            });
+
+            document.getElementById('btnStartApp').addEventListener('click', () => {
+                const nameInput = document.getElementById('userNameInput');
+                const errProfileName = document.getElementById('errProfileName');
+                const name = nameInput.value.trim();
+                if(!name) {
+                    nameInput.classList.add('error');
+                    errProfileName.classList.add('show');
+                    return;
+                }
+                currentUserName = name;
+                localStorage.setItem('gamaya_username', name);
+                if(!localStorage.getItem('gamaya_created_date')) {
+                    const nowStr = new Date().toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' });
+                    localStorage.setItem('gamaya_created_date', nowStr);
+                }
+                document.getElementById('profileScreen').classList.add('hidden');
+                document.getElementById('pinSetupScreen').classList.remove('hidden');
+                const setupInputs = document.querySelectorAll('.pin-digit-setup');
+                if(setupInputs.length > 0) setupInputs[0].focus();
+            });
+
+            const setupInputs = document.querySelectorAll('.pin-digit-setup');
+            setupInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if(e.target.value && index < setupInputs.length - 1) setupInputs[index + 1].focus();
+                });
+                input.addEventListener('keydown', (e) => {
+                    if(e.key === 'Backspace' && !input.value && index > 0) setupInputs[index - 1].focus();
+                });
+            });
+
+            document.getElementById('btnSubmitPin').addEventListener('click', () => {
+                let enteredPin = "";
+                setupInputs.forEach(input => enteredPin += input.value);
+                const errPin = document.getElementById('errPin');
+                if(enteredPin.length !== 4) { errPin.classList.add('show'); return; }
+                errPin.classList.remove('show');
+
+                if(!isConfirmingPin) {
+                    firstEnteredPin = enteredPin;
+                    isConfirmingPin = true;
+                    document.getElementById('txtPinDesc').innerText = translations[currentLang].pinConfirmDesc;
+                    setupInputs.forEach(input => input.value = '');
+                    setupInputs[0].focus();
+                } else {
+                    if(enteredPin === firstEnteredPin) {
+                        localStorage.setItem('app_secure_pin', firstEnteredPin);
+                        localStorage.setItem(`backup_pin_${currentPhone}`, firstEnteredPin);
+                        localStorage.setItem(`backup_name_${currentPhone}`, currentUserName);
+                        document.getElementById('pinSetupScreen').classList.add('hidden');
+                        document.getElementById('dashboardScreen').classList.remove('hidden');
+                        document.getElementById('bottomNav').classList.remove('hidden');
+                    } else {
+                        errPin.innerText = translations[currentLang].pinErrorMatch;
+                        errPin.classList.add('show');
+                        isConfirmingPin = false;
+                        firstEnteredPin = '';
+                        document.getElementById('txtPinDesc').innerText = translations[currentLang].pinDesc;
+                        setupInputs.forEach(input => input.value = '');
+                        setupInputs[0].focus();
+                    }
+                }
+            });
+
+            const loginInputs = document.querySelectorAll('.pin-digit-login');
+            loginInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if(e.target.value && index < loginInputs.length - 1) loginInputs[index + 1].focus();
+                });
+                input.addEventListener('keydown', (e) => {
+                    if(e.key === 'Backspace' && !input.value && index > 0) loginInputs[index - 1].focus();
+                });
+            });
+
+            document.getElementById('btnLogin').addEventListener('click', () => {
+                let enteredLoginPin = "";
+                loginInputs.forEach(input => enteredLoginPin += input.value);
+                const errLoginPin = document.getElementById('errLoginPin');
+                const savedPin = localStorage.getItem('app_secure_pin');
+                if(enteredLoginPin === savedPin || !savedPin) {
+                    errLoginPin.classList.remove('show');
+                    document.getElementById('pinLoginScreen').classList.add('hidden');
+                    document.getElementById('dashboardScreen').classList.remove('hidden');
+                    document.getElementById('bottomNav').classList.remove('hidden');
+                } else {
+                    errLoginPin.classList.add('show');
+                    loginInputs.forEach(input => input.value = '');
+                    loginInputs[0].focus();
+                }
+            });
+
+            document.getElementById('linkForgotPin').addEventListener('click', () => {
+                document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+                document.getElementById('forgotPhoneScreen').classList.remove('hidden');
+                document.getElementById('forgotPhoneInput').value = '';
+            });
+
+            document.getElementById('btnBackToLogin').addEventListener('click', () => {
+                document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+                document.getElementById('pinLoginScreen').classList.remove('hidden');
+            });
+
+            document.getElementById('btnReset').addEventListener('click', () => {
+                logoutAccount();
+            });
+
+            document.getElementById('btnSendForgot').addEventListener('click', () => {
+                const phone = document.getElementById('forgotPhoneInput').value.trim();
+                if(!phone) { alert('الرجاء إدخال رقم الموبايل'); return; }
+                forgotTargetPhone = phone;
+                document.getElementById('forgotOtpMsg').innerText = `تم إرسال كود الاستعادة للرقم: ${phone}`;
+                document.getElementById('forgotPhoneScreen').classList.add('hidden');
+                document.getElementById('forgotOtpScreen').classList.remove('hidden');
+            });
+
+            document.getElementById('btnVerifyForgot').addEventListener('click', () => {
+                const code = document.getElementById('forgotOtpInput').value.trim();
+                if(!code) { alert('الرجاء إدخال كود الاستعادة'); return; }
+                document.getElementById('forgotOtpScreen').classList.add('hidden');
+                document.getElementById('newPinScreen').classList.remove('hidden');
+                const newInputs = document.querySelectorAll('.pin-digit-new');
+                if(newInputs.length > 0) newInputs[0].focus();
+            });
+
+            const newPinInputs = document.querySelectorAll('.pin-digit-new');
+            newPinInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if(e.target.value && index < newPinInputs.length - 1) newPinInputs[index + 1].focus();
+                });
+                input.addEventListener('keydown', (e) => {
+                    if(e.key === 'Backspace' && !input.value && index > 0) newPinInputs[index - 1].focus();
+                });
+            });
+
+            document.getElementById('btnSaveNewPin').addEventListener('click', () => {
+                let newPin = "";
+                newPinInputs.forEach(input => newPin += input.value);
+                if(newPin.length !== 4) { alert('الرجاء إدخال رمز مكون من 4 أرقام'); return; }
+                localStorage.setItem('app_secure_pin', newPin);
+                localStorage.setItem('gamaya_phone', forgotTargetPhone);
+                currentPhone = forgotTargetPhone;
+                localStorage.setItem(`backup_pin_${currentPhone}`, newPin);
+                localStorage.setItem(`backup_name_${currentPhone}`, currentUserName);
+                alert('تم تغيير رمز الحماية بنجاح! جاري الدخول للتطبيق...');
+                document.getElementById('newPinScreen').classList.add('hidden');
+                document.getElementById('dashboardScreen').classList.remove('hidden');
+                document.getElementById('bottomNav').classList.remove('hidden');
+            });
+
+            document.getElementById('navItemHome').addEventListener('click', () => switchTab('home'));
+            document.getElementById('navItemMyGamayas').addEventListener('click', () => switchTab('myGamayas'));
+            document.getElementById('navItemAdd').addEventListener('click', () => document.getElementById('addBottomSheet').classList.remove('hidden'));
+            document.getElementById('navItemOccasions').addEventListener('click', () => switchTab('occasions'));
+            document.getElementById('navItemMore').addEventListener('click', () => switchTab('more'));
+
+            document.getElementById('btnOpenCreateSheet').addEventListener('click', () => document.getElementById('addBottomSheet').classList.remove('hidden'));
+            document.getElementById('btnJoinDash').addEventListener('click', () => showJoinGamayaScreen('gamaya'));
+            document.getElementById('addBottomSheet').addEventListener('click', () => document.getElementById('addBottomSheet').classList.add('hidden'));
+            document.getElementById('sheetOptGamaya').addEventListener('click', () => { document.getElementById('addBottomSheet').classList.add('hidden'); startCreateGamaya(); });
+            document.getElementById('sheetOptOccasion').addEventListener('click', () => { document.getElementById('addBottomSheet').classList.add('hidden'); startCreateOccasion(); });
+
+            document.getElementById('btnBackFromJoin').addEventListener('click', () => {
+                if (joinModeType === 'occasion') switchTab('occasions');
+                else switchTab('home');
+            });
+
+            document.getElementById('btnSubmitJoin').addEventListener('click', () => {
+                const inviteCode = document.getElementById('inviteCodeInput').value.trim();
+                if(!inviteCode) { alert('الرجاء إدخال كود الدعوة'); return; }
+                let joinedList = JSON.parse(localStorage.getItem(`gamaya_joined_${currentPhone}`) || '[]');
+                joinedList.push({ id: inviteCode, name: 'جمعية منضمة (' + inviteCode + ')', amount: 1000 });
+                localStorage.setItem(`gamaya_joined_${currentPhone}`, JSON.stringify(joinedList));
+                alert('تم الانضمام بنجاح!');
+                if (joinModeType === 'occasion') switchTab('occasions');
+                else switchTab('myGamayas');
+            });
+
+            document.getElementById('btnJoinOccTop').addEventListener('click', () => showJoinGamayaScreen('occasion'));
+            document.getElementById('btnJoinOccBottom').addEventListener('click', () => showJoinGamayaScreen('occasion'));
+            document.getElementById('btnCreateOcc').addEventListener('click', startCreateOccasion);
+            document.getElementById('btnBackToOcc').addEventListener('click', () => switchTab('occasions'));
+
+            document.getElementById('contribFixed').addEventListener('click', () => setContributionType('fixed'));
+            document.getElementById('contribVariable').addEventListener('click', () => setContributionType('variable'));
+
+            document.getElementById('btnSubmitOcc').addEventListener('click', () => {
+                const title = document.getElementById('occTitle').value.trim();
+                if(!title) { alert('يرجى إدخال عنوان المناسبة'); return; }
+                alert('تم إنشاء المناسبة بنجاح!');
+                switchTab('occasions');
+            });
+
+            document.getElementById('tabActive').addEventListener('click', (e) => switchOccasionTab('active', e));
+            document.getElementById('tabEnded').addEventListener('click', (e) => switchOccasionTab('ended', e));
+            document.getElementById('tabArchived').addEventListener('click', (e) => switchOccasionTab('archived', e));
+
+            document.getElementById('btnNext1').addEventListener('click', () => {
+                const nameInput = document.getElementById('gName');
+                const membersInput = document.getElementById('gMembersCount');
+                if(!nameInput.value.trim()) { nameInput.classList.add('error'); return; }
+                if(parseInt(membersInput.value) < 2) { membersInput.classList.add('error'); return; }
+                nameInput.classList.remove('error');
+                membersInput.classList.remove('error');
+                nextStep(2);
+            });
+
+            document.getElementById('btnNext2').addEventListener('click', () => {
+                const amountInput = document.getElementById('gAmount');
+                if(!amountInput.value || parseFloat(amountInput.value) <= 0) { amountInput.classList.add('error'); return; }
+                amountInput.classList.remove('error');
+                nextStep(3);
+            });
+
+            document.getElementById('btnPrev2').addEventListener('click', () => nextStep(1));
+            document.getElementById('btnNext3').addEventListener('click', () => nextStep(4));
+            document.getElementById('btnPrev3').addEventListener('click', () => nextStep(2));
+            document.getElementById('btnPrev4').addEventListener('click', () => nextStep(3));
+
+            document.getElementById('payInstaToggle').addEventListener('change', () => togglePaymentFields('insta'));
+            document.getElementById('payWalletToggle').addEventListener('change', () => togglePaymentFields('wallet'));
+            document.getElementById('payBankToggle').addEventListener('change', () => togglePaymentFields('bank'));
+
+            document.getElementById('btnSubmitGamaya').addEventListener('click', () => {
+                const name = document.getElementById('gName').value;
+                const amount = document.getElementById('gAmount').value;
+                const inviteCode = 'GM-' + Math.floor(1000 + Math.random() * 9000);
+                let ownedList = JSON.parse(localStorage.getItem(`gamaya_owned_${currentPhone}`) || '[]');
+                ownedList.push({ id: inviteCode, name: name, amount: amount });
+                localStorage.setItem(`gamaya_owned_${currentPhone}`, JSON.stringify(ownedList));
+                if(!localStorage.getItem('gamaya_created_date')) {
+                    const nowStr = new Date().toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' });
+                    localStorage.setItem('gamaya_created_date', nowStr);
+                }
+                alert('تم إنشاء الجمعية بنجاح! كود الدعوة: ' + inviteCode);
+                switchTab('myGamayas');
+            });
+
+            document.getElementById('navNotifications').addEventListener('click', openNotificationsScreen);
+            document.getElementById('navReports').addEventListener('click', openReportsScreen);
+            document.getElementById('navProfile').addEventListener('click', openProfileScreen);
+            document.getElementById('navLogout').addEventListener('click', logoutAccount);
+
+            document.getElementById('btnRefreshProfile').addEventListener('click', refreshProfileData);
+            document.getElementById('btnBackToMoreFromProf').addEventListener('click', () => switchTab('more'));
+            document.getElementById('btnOpenEditName').addEventListener('click', openEditNameSheet);
+            document.getElementById('btnProfileLogout').addEventListener('click', logoutAccount);
+            document.getElementById('editNameBottomSheet').addEventListener('click', closeEditNameSheet);
+            document.getElementById('btnSaveNameSheet').addEventListener('click', saveUserNameFromSheet);
+
+            document.getElementById('btnBackToMoreFromRep').addEventListener('click', () => switchTab('more'));
+            document.getElementById('notifReadAll').addEventListener('click', markAllNotificationsAsRead);
+            document.getElementById('btnBackToMoreFromNotif').addEventListener('click', () => switchTab('more'));
+
+            // أزرار مودال تسجيل الخروج الداخلي المخصص
+            document.getElementById('btnCancelLogout')?.addEventListener('click', () => {
+                const customModal = document.getElementById('customConfirmModal');
+                if (customModal) {
+                    customModal.classList.add('hidden');
+                    customModal.style.display = 'none';
+                }
+            });
+
+            document.getElementById('btnConfirmLogout')?.addEventListener('click', () => {
+                executeLogout();
+            });
+        });
+
+        function showJoinGamayaScreen(type = 'gamaya') {
+            joinModeType = type;
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('joinGamayaScreen').classList.remove('hidden');
+            document.getElementById('inviteCodeInput').value = '';
+            updateTexts();
+        }
+
+        function startCreateOccasion() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('createOccasionScreen').classList.remove('hidden');
+            document.getElementById('occTitle').value = '';
+            document.getElementById('occDesc').value = '';
+            document.getElementById('occAmount').value = '';
+            document.getElementById('occPhone').value = currentPhone;
+            document.getElementById('occDate').value = new Date().toISOString().split('T')[0];
+            setContributionType('variable');
+        }
+
+        function setContributionType(type) {
+            currentContributionType = type;
+            const fixedBtn = document.getElementById('contribFixed');
+            const varBtn = document.getElementById('contribVariable');
+            const fixedContainer = document.getElementById('fixedAmountContainer');
+            if (type === 'fixed') {
+                fixedBtn.classList.add('active'); varBtn.classList.remove('active'); fixedContainer.classList.remove('hidden');
+            } else {
+                varBtn.classList.add('active'); fixedBtn.classList.remove('active'); fixedContainer.classList.add('hidden');
+            }
+        }
+
+        function switchOccasionTab(tab, event) {
+            document.querySelectorAll('.tabs-header .tab-item').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function startCreateGamaya() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('createGamayaScreen').classList.remove('hidden');
+            currentStepNum = 1;
+            renderSteps();
+            document.getElementById('gStartDate').value = new Date().toISOString().split('T')[0];
+            updateMonthsDropdown();
+        }
+
+        function nextStep(stepNum) {
+            currentStepNum = stepNum;
+            for(let i=1; i<=4; i++) {
+                const st = document.getElementById(`formStep${i}`);
+                if(st) st.classList.add('hidden');
+            }
+            const targetStep = document.getElementById(`formStep${stepNum}`);
+            if(targetStep) targetStep.classList.remove('hidden');
+            renderSteps();
+
+            if(stepNum === 4) {
+                const name = document.getElementById('gName').value;
+                const amount = document.getElementById('gAmount').value;
+                const reviewSummary = document.getElementById('reviewSummary');
+                if(reviewSummary) {
+                    reviewSummary.innerHTML = `
+                        <div class="review-section">
+                            <div class="review-section-title">البيانات الأساسية</div>
+                            <div class="review-row"><span class="review-label">الاسم</span><span class="review-value">${name}</span></div>
+                        </div>
+                        <div class="review-section">
+                            <div class="review-section-title">الإعدادات المالية</div>
+                            <div class="review-row"><span class="review-label">الاشتراك</span><span class="review-value">${amount} ج.م</span></div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function openProfileScreen() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('profileDetailsScreen').classList.remove('hidden');
+            document.getElementById('profileDisplayName').innerText = currentUserName;
+            document.getElementById('profileDisplayPhone').innerText = currentPhone ? (currentPhone + '+') : '20101411128+';
+
+            let ownedList = JSON.parse(localStorage.getItem(`gamaya_owned_${currentPhone}`) || '[]');
+            let joinedList = JSON.parse(localStorage.getItem(`gamaya_joined_${currentPhone}`) || '[]');
+            let ownedCount = ownedList.length;
+            let joinedCount = joinedList.length;
+            let totalCount = ownedCount + joinedCount;
+
+            document.getElementById('statTotal').innerText = totalCount;
+            document.getElementById('statJoined').innerText = joinedCount;
+            document.getElementById('statOwned').innerText = ownedCount;
+        }
+
+        function refreshProfileData() {
+            alert('تم تحديث البيانات الفعلية بنجاح!');
+            openProfileScreen();
+        }
+
+        function openEditNameSheet() {
+            document.getElementById('sheetUserNameInput').value = currentUserName;
+            document.getElementById('editNameBottomSheet').classList.remove('hidden');
+        }
+
+        function closeEditNameSheet() {
+            document.getElementById('editNameBottomSheet').classList.add('hidden');
+        }
+
+        function saveUserNameFromSheet() {
+            const val = document.getElementById('sheetUserNameInput').value.trim();
+            if(val) {
+                currentUserName = val;
+                localStorage.setItem('gamaya_username', val);
+                document.getElementById('profileDisplayName').innerText = val;
+                document.getElementById('editNameBottomSheet').classList.add('hidden');
+                alert('تم تعديل وحفظ الاسم بنجاح!');
+            }
+        }
+
+        // دالة فتح مودال تسجيل الخروج
+        function logoutAccount() {
+            const customModal = document.getElementById('customConfirmModal');
+            if (customModal) {
+                customModal.classList.remove('hidden');
+                customModal.style.display = 'flex';
+            }
+        }
+
+        // دالة تنفيذ مسح البيانات والخروج الفعلي (مربوطة بزر التأكيد)
+        function executeLogout() {
+            if (currentPhone) {
+                localStorage.setItem(`backup_name_${currentPhone}`, currentUserName);
+                localStorage.setItem(`backup_pin_${currentPhone}`, localStorage.getItem('app_secure_pin'));
+            }
+            localStorage.removeItem('app_secure_pin');
+            localStorage.removeItem('gamaya_username');
+            localStorage.removeItem('gamaya_phone');
+            
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('bottomNav').classList.add('hidden');
+            document.getElementById('phoneScreen').classList.remove('hidden');
+            document.getElementById('phoneInput').value = '';
+            
+            const customModal = document.getElementById('customConfirmModal');
+            if (customModal) {
+                customModal.classList.add('hidden');
+                customModal.style.display = 'none';
+            }
+        }
+
+        function openNotificationsScreen() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('notificationsScreen').classList.remove('hidden');
+            loadUserNotifications();
+        }
+
+        function loadUserNotifications() {
+            const container = document.getElementById('notificationsListContainer');
+            const notifications = JSON.parse(localStorage.getItem(`gamaya_notifications_${currentPhone}`) || '[]');
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card" style="text-align: center; padding: 30px 20px;">
+                        <div class="welcome-circle">🔔</div>
+                        <h3 style="font-size: 16px; margin-bottom: 6px;">${translations[currentLang].notifEmpty}</h3>
+                        <p style="font-size: 12px; color: #94a3b8;">طلبات الانضمام وإشعارات الدفع تظهر هنا.</p>
+                    </div>
+                `;
+            } else {
+                let html = '';
+                notifications.forEach(n => {
+                    html += `<div class="glass-card"><h4>${n.title}</h4><p>${n.message}</p></div>`;
+                });
+                container.innerHTML = html;
+            }
+        }
+
+        function markAllNotificationsAsRead() {
+            localStorage.setItem(`gamaya_notifications_${currentPhone}`, JSON.stringify([]));
+            loadUserNotifications();
+        }
+
+        function openReportsScreen() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('reportsScreen').classList.remove('hidden');
+            loadDetailedReports();
+        }
+
+        function loadDetailedReports() {
+            const container = document.getElementById('reportsListContainer');
+            let ownedList = JSON.parse(localStorage.getItem(`gamaya_owned_${currentPhone}`) || '[]');
+            let joinedList = JSON.parse(localStorage.getItem(`gamaya_joined_${currentPhone}`) || '[]');
+            let all = [...ownedList, ...joinedList];
+
+            if(all.length > 0) {
+                let html = '';
+                all.forEach(g => {
+                    html += `
+                        <div class="glass-card" style="text-align: right; margin-bottom: 15px;">
+                            <h3 style="color: #34d399; margin-bottom: 8px;">🏛️ ${g.name}</h3>
+                            <p style="margin-bottom: 6px;">💰 القسط: ${g.amount} ج.م</p>
+                            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; margin-top: 10px; font-size: 12px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                    <span>👤 ${currentUserName}</span><span style="color: #34d399;">✔ دَفَع</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `
+                    <div class="glass-card" style="text-align: center; padding: 30px 20px;">
+                        <div class="welcome-circle">📊</div>
+                        <h3 style="font-size: 18px; margin-bottom: 8px;">${translations[currentLang].reportsEmptyTitle}</h3>
+                        <p style="margin-bottom: 20px; font-size: 12px; color: #94a3b8;">${translations[currentLang].reportsEmptyDesc}</p>
+                        <button class="btn btn-green" onclick="startCreateGamaya()" style="margin-bottom: 10px;">${translations[currentLang].btnCreateGamayaRep}</button>
+                    </div>
+                `;
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('addBottomSheet').classList.add('hidden');
+            document.getElementById('editNameBottomSheet').classList.add('hidden');
+            document.getElementById('restoreDataModal').classList.add('hidden');
+
+            if(tabName === 'home') {
+                document.getElementById('dashboardScreen').classList.remove('hidden');
+                document.getElementById('navItemHome').classList.add('active');
+            } else if(tabName === 'myGamayas') {
+                document.getElementById('myGamayasScreen').classList.remove('hidden');
+                document.getElementById('navItemMyGamayas').classList.add('active');
+                
+                let ownedList = JSON.parse(localStorage.getItem(`gamaya_owned_${currentPhone}`) || '[]');
+                let joinedList = JSON.parse(localStorage.getItem(`gamaya_joined_${currentPhone}`) || '[]');
+                let all = [...ownedList, ...joinedList];
+                const container = document.getElementById('gamayasListContainer');
+
+                if(all.length > 0) {
+                    let html = '';
+                    all.forEach(g => {
+                        html += `
+                            <div class="glass-card" style="text-align: right; margin-bottom: 12px;">
+                                <h3 style="color: #34d399; margin-bottom: 6px;">${g.name}</h3>
+                                <p style="margin-bottom: 4px;">💰 القسط: ${g.amount} ج.م</p>
+                                <p style="margin-bottom: 0; font-size: 11px; color: #94a3b8;">الكود: ${g.id}</p>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `
+                        <div class="glass-card" style="text-align: center; padding: 30px 20px;">
+                            <div class="welcome-circle">🏛️</div>
+                            <h2 style="font-size: 18px; margin-bottom: 8px;">مفيش جمعيات لسه</h2>
+                            <p style="margin-bottom: 20px; font-size: 12px;">ابدأ جمعية جديدة أو انضم بكود الدعوة.</p>
+                            <button class="btn btn-green" onclick="startCreateGamaya()" style="margin-bottom: 10px;">+ إنشاء جمعية</button>
+                        </div>
+                    `;
+                }
+            } else if(tabName === 'occasions') {
+                document.getElementById('occasionsScreen').classList.remove('hidden');
+                document.getElementById('navItemOccasions').classList.add('active');
+            } else if(tabName === 'more') {
+                document.getElementById('moreScreen').classList.remove('hidden');
+                document.getElementById('navItemMore').classList.add('active');
+            }
+        }
+        function showAppToast(message, type = 'error') {
+    let toast = document.getElementById('otpToastMessage');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'otpToastMessage';
+        document.body.appendChild(toast);
+    }
+    
+    toast.innerText = message;
+    
+    // إحداثيات ومكان ظهور الرسالة (بالقرب من خانة رقم التليفون أو وسط الشاشة بشكل شيك)
+    toast.style.position = 'fixed';
+    toast.style.top = '65%'; // قريبة جداً من مكان إدخال التليفون وتحت الزرار
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%) translateY(20px)'; // تبدأ من تحت شوية
+    
+    // ستايل الـ Liquid Glass الزجاجي العصري اللي طلبته
+    toast.style.background = 'rgba(255, 255, 255, 0.15)';
+    toast.style.backdropFilter = 'blur(12px)';
+    toast.style.webkitBackdropFilter = 'blur(12px)';
+    toast.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+    toast.style.color = '#ffffff';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = '14px';
+    toast.style.zIndex = '999999';
+    toast.style.fontSize = '14px';
+    toast.style.fontWeight = '500';
+    toast.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.3)';
+    toast.style.opacity = '0';
+    toast.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+    toast.style.display = 'block';
+    
+    // حركة الظهور (تطلع لفوق مكانها وتظهر)
+    setTimeout(() => {
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        toast.style.opacity = '1';
+    }, 10);
+    
+    // تقف ثانيتين (2000 مللي ثانية) وتنزلق لتحت تختفي
+    setTimeout(() => {
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 300); // تختفي تماماً بعد انتهاء الحركة
+    }, 4000);
+}
+    </script>
+</body>
+</html>

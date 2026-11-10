@@ -1,0 +1,12 @@
+2026/11/06-21:56:36.261 588c Reusing MANIFEST D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/11/06-21:56:36.261 588c Recovering log #6
+2026/11/06-21:56:36.330 588c Reusing old log D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000006.log 
+2026/11/06-21:56:39.628 588c Level-0 table #11: started
+2026/11/06-21:56:39.672 588c Level-0 table #11: 1173292 bytes OK
+2026/11/06-21:56:39.674 588c Delete type=0 #6
+2026/11/06-21:56:40.095 5fa4 Compacting 1@1 + 1@2 files
+2026/11/06-21:56:40.501 5fa4 Generated table #12@1: 27642 keys, 1179230 bytes
+2026/11/06-21:56:40.501 5fa4 Compacted 1@1 + 1@2 files => 1179230 bytes
+2026/11/06-21:56:40.502 5fa4 compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/11/06-21:56:40.503 5fa4 Delete type=2 #8
+2026/11/06-21:56:40.503 5fa4 Delete type=2 #11
