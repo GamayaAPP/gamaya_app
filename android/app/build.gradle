@@ -3,6 +3,10 @@ apply plugin: 'com.android.application'
 android {
     namespace = "com.gamaya.app"
     compileSdk = rootProject.ext.compileSdkVersion
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
     defaultConfig {
         applicationId "com.gamaya.app"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -16,8 +20,17 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            storeFile file('../../release-key.jks')
+            storePassword '246300'
+            keyAlias 'my-key-alias'
+            keyPassword '246300'
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

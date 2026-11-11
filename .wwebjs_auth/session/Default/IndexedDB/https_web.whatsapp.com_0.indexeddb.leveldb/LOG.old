@@ -1,12 +1,75 @@
-2026/11/06-21:56:36.261 588c Reusing MANIFEST D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2026/11/06-21:56:36.261 588c Recovering log #6
-2026/11/06-21:56:36.330 588c Reusing old log D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000006.log 
-2026/11/06-21:56:39.628 588c Level-0 table #11: started
-2026/11/06-21:56:39.672 588c Level-0 table #11: 1173292 bytes OK
-2026/11/06-21:56:39.674 588c Delete type=0 #6
-2026/11/06-21:56:40.095 5fa4 Compacting 1@1 + 1@2 files
-2026/11/06-21:56:40.501 5fa4 Generated table #12@1: 27642 keys, 1179230 bytes
-2026/11/06-21:56:40.501 5fa4 Compacted 1@1 + 1@2 files => 1179230 bytes
-2026/11/06-21:56:40.502 5fa4 compacted to: files[ 0 0 1 0 0 0 0 ]
-2026/11/06-21:56:40.503 5fa4 Delete type=2 #8
-2026/11/06-21:56:40.503 5fa4 Delete type=2 #11
+2026/11/09-12:21:42.460 4fcc Reusing MANIFEST D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/11/09-12:21:42.461 4fcc Recovering log #10
+2026/11/09-12:21:42.496 4fcc Reusing old log D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000010.log 
+2026/11/09-12:21:56.950 4fcc Level-0 table #15: started
+2026/11/09-12:21:57.031 4fcc Level-0 table #15: 1141695 bytes OK
+2026/11/09-12:21:57.033 4fcc Delete type=0 #10
+2026/11/09-12:21:57.084 4fcc Compacting 1@1 + 1@2 files
+2026/11/09-12:21:57.380 4fcc Generated table #16@1: 48948 keys, 1739874 bytes
+2026/11/09-12:21:57.380 4fcc Compacted 1@1 + 1@2 files => 1739874 bytes
+2026/11/09-12:21:57.381 4fcc compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/11/09-12:21:57.382 4fcc Delete type=2 #15
+2026/11/09-12:22:03.107 4fcc Level-0 table #18: started
+2026/11/09-12:22:03.179 4fcc Level-0 table #18: 1363242 bytes OK
+2026/11/09-12:22:03.181 4fcc Delete type=2 #12
+2026/11/09-12:22:03.181 4fcc Delete type=0 #14
+2026/11/09-12:22:03.220 4fcc Compacting 1@1 + 1@2 files
+2026/11/09-12:22:03.474 4fcc Generated table #19@1: 37594 keys, 2189946 bytes
+2026/11/09-12:22:03.474 4fcc Compacted 1@1 + 1@2 files => 2189946 bytes
+2026/11/09-12:22:03.475 4fcc compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/11/09-12:22:23.429 3684 Level-0 table #21: started
+2026/11/09-12:22:23.497 3684 Level-0 table #21: 1392008 bytes OK
+2026/11/09-12:22:23.501 3684 Delete type=2 #16
+2026/11/09-12:22:23.501 3684 Delete type=0 #17
+2026/11/09-12:22:23.501 3684 Delete type=2 #18
+2026/11/09-12:22:38.820 4fcc Compacting 1@1 + 1@2 files
+2026/11/09-12:22:39.063 4fcc Generated table #22@1: 34755 keys, 2202115 bytes
+2026/11/09-12:22:39.089 4fcc Generated table #23@1: 4160 keys, 398929 bytes
+2026/11/09-12:22:39.089 4fcc Compacted 1@1 + 1@2 files => 2601044 bytes
+2026/11/09-12:22:39.091 4fcc compacted to: files[ 0 0 2 0 0 0 0 ]
+2026/11/09-12:22:39.092 4fcc Delete type=2 #19
+2026/11/09-12:22:39.092 4fcc Delete type=2 #21
+2026/11/09-14:21:59.311 4fcc Level-0 table #25: started
+2026/11/09-14:21:59.424 4fcc Level-0 table #25: 1272314 bytes OK
+2026/11/09-14:21:59.427 4fcc Delete type=0 #20
+2026/11/09-14:22:14.938 4fcc Compacting 1@1 + 2@2 files
+2026/11/09-14:22:15.205 4fcc Generated table #26@1: 38132 keys, 2202565 bytes
+2026/11/09-14:22:15.222 4fcc Generated table #27@1: 4458 keys, 423708 bytes
+2026/11/09-14:22:15.222 4fcc Compacted 1@1 + 2@2 files => 2626273 bytes
+2026/11/09-14:22:15.223 4fcc compacted to: files[ 0 0 2 0 0 0 0 ]
+2026/11/09-14:22:15.224 4fcc Delete type=2 #22
+2026/11/09-14:22:15.224 4fcc Delete type=2 #23
+2026/11/09-14:22:15.225 4fcc Delete type=2 #25
+2026/11/09-16:16:41.293 3684 Level-0 table #29: started
+2026/11/09-16:16:41.362 3684 Level-0 table #29: 1269478 bytes OK
+2026/11/09-16:16:41.365 3684 Delete type=0 #24
+2026/11/09-16:19:20.382 4fcc Compacting 1@1 + 2@2 files
+2026/11/09-16:19:20.673 4fcc Generated table #30@1: 42393 keys, 2217890 bytes
+2026/11/09-16:19:20.723 4fcc Generated table #31@1: 5156 keys, 550890 bytes
+2026/11/09-16:19:20.723 4fcc Compacted 1@1 + 2@2 files => 2768780 bytes
+2026/11/09-16:19:20.724 4fcc compacted to: files[ 0 0 2 0 0 0 0 ]
+2026/11/09-16:19:20.725 4fcc Delete type=2 #26
+2026/11/09-16:19:20.725 4fcc Delete type=2 #27
+2026/11/09-16:19:20.725 4fcc Delete type=2 #29
+2026/11/09-18:07:38.785 3684 Level-0 table #33: started
+2026/11/09-18:07:38.821 3684 Level-0 table #33: 1354553 bytes OK
+2026/11/09-18:07:38.823 3684 Delete type=0 #28
+2026/11/09-18:07:39.185 4fcc Compacting 1@1 + 2@2 files
+2026/11/09-18:07:39.289 4fcc Generated table #34@1: 46945 keys, 2224096 bytes
+2026/11/09-18:07:39.300 4fcc Generated table #35@1: 5738 keys, 508334 bytes
+2026/11/09-18:07:39.300 4fcc Compacted 1@1 + 2@2 files => 2732430 bytes
+2026/11/09-18:07:39.301 4fcc compacted to: files[ 0 0 2 0 0 0 0 ]
+2026/11/09-18:07:39.301 4fcc Delete type=2 #30
+2026/11/09-18:07:39.301 4fcc Delete type=2 #31
+2026/11/09-18:07:39.301 4fcc Delete type=2 #33
+2026/11/09-20:32:44.731 4fcc Level-0 table #37: started
+2026/11/09-20:32:44.797 4fcc Level-0 table #37: 1276484 bytes OK
+2026/11/09-20:32:44.798 4fcc Delete type=0 #32
+2026/11/09-20:35:51.596 4228 Compacting 1@1 + 2@2 files
+2026/11/09-20:35:51.738 4228 Generated table #38@1: 51506 keys, 2220700 bytes
+2026/11/09-20:35:51.757 4228 Generated table #39@1: 6445 keys, 686376 bytes
+2026/11/09-20:35:51.757 4228 Compacted 1@1 + 2@2 files => 2907076 bytes
+2026/11/09-20:35:51.757 4228 compacted to: files[ 0 0 2 0 0 0 0 ]
+2026/11/09-20:35:51.758 4228 Delete type=2 #34
+2026/11/09-20:35:51.758 4228 Delete type=2 #35
+2026/11/09-20:35:51.758 4228 Delete type=2 #37

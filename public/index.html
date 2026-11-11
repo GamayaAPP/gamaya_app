@@ -13,18 +13,20 @@
         }
         
         body {
-            background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100vh;
-            max-width: 420px;
-            margin: 0 auto;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
-            overflow: hidden;
-            position: relative;
-        }
+    background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
+    overflow-x: hidden;
+    position: relative;
+}
 
         body::before {
             content: '';
@@ -457,6 +459,79 @@
         </div>
     </div>
 
+    <!-- نافذة إشعار التحديث الجديد -->
+    <div id="updateModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #1e1b4b; padding: 20px; border-radius: 12px; width: 90%; max-width: 330px; text-align: center; color: #fff;">
+            <h3>تحديث جديد متاح!</h3>
+            <p style="margin: 15px 0; font-size: 14px; color: #cbd5e1;">يتوفر إصدار جديد من تطبيق جمعية، يرجى التحديث لضمان أفضل أداء.</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="btnCancelUpdate" style="padding: 10px 20px; background: #64748b; border: none; border-radius: 8px; color: #fff; cursor: pointer;">إلغاء</button>
+                <button id="btnConfirmUpdate" style="padding: 10px 20px; background: #22c55e; border: none; border-radius: 8px; color: #fff; cursor: pointer;">تحديث الآن</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const CURRENT_APP_VERSION = "1.0.0"; 
+
+    async function checkForUpdates() {
+    try {
+        let response = await fetch('https://raw.githubusercontent.com/GamayaAPP/gamaya_app/refs/heads/main/gamaya.json');
+        let data = await response.json();
+
+        if (data.version !== CURRENT_APP_VERSION) {
+            document.getElementById('updateModal').style.display = 'flex';
+            
+            let confirmBtn = document.getElementById('btnConfirmUpdate');
+            let newBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+
+    newBtn.onclick = async function() {
+    try {
+        newBtn.innerText = "جاري تحميل التحديث...";
+        newBtn.disabled = true;
+
+        // 1. جلب ملف التحديث مباشرة كـ Blob في خلفية التطبيق بدون متصفح
+        let response = await fetch(data.apkUrl);
+        let blob = await response.blob();
+        
+        // 2. إنشاء مسار محلي مؤقت للملف داخل التطبيق
+        let blobUrl = window.URL.createObjectURL(blob);
+        
+        // 3. إنشاء رابط خفي وتشغيل أمر التثبيت مباشرة
+        let a = document.createElement('a');
+        a.href = blobUrl;
+        a.setAttribute('download', 'app.apk');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        newBtn.innerText = "تم التحميل، جاري الفتح...";
+        
+        setTimeout(() => {
+            newBtn.innerText = "تحديث الآن";
+            newBtn.disabled = false;
+        }, 4000);
+
+    } catch (err) {
+        console.error("خطأ في التحديث:", err);
+        alert("فشل التحديث، تأكد من الاتصال.");
+        newBtn.innerText = "تحديث الآن";
+        newBtn.disabled = false;
+    }
+};
+
+            document.getElementById('btnCancelUpdate').onclick = function() {
+                document.getElementById('updateModal').style.display = 'none';
+            };
+        }
+    } catch (error) {
+        console.log("Check update failed", error);
+    }
+}
+
+window.addEventListener('DOMContentLoaded', checkForUpdates);
+    </script>
     <!-- نافذة منسدلة لإنشاء جمعية أو مناسبة -->
     <div id="addBottomSheet" class="bottom-sheet-overlay hidden">
         <div class="bottom-sheet" onclick="event.stopPropagation()">
@@ -2126,6 +2201,17 @@ document.getElementById('btnVerifyOtp').addEventListener('click', async () => {
         }, 300); // تختفي تماماً بعد انتهاء الحركة
     }, 4000);
 }
+// كود عام لجعل جميع حقول الأرقام والهاتف والمبالغ تفتح لوحة المفاتيح الرقمية تلقائياً
+document.addEventListener("DOMContentLoaded", function() {
+    checkForUpdates(); // فحص التحديثات تلقائياً مع فتح التطبيق
+
+    // كود جعل جميع حقول الأرقام والهاتف تفتح لوحة المفاتيح الرقمية تلقائياً
+    const inputs = document.querySelectorAll('input[type="tel"], input[type="number"], input[type="text"]');
+    inputs.forEach(input => {
+        input.setAttribute('inputmode', 'numeric');
+        input.setAttribute('pattern', '[0-9]*');
+    });
+});
     </script>
 </body>
 </html>

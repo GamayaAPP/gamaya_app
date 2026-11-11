@@ -1,6 +1,6 @@
-2026/11/06-21:56:35.531 f8 Reusing MANIFEST D:\gamaya_app\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
-2026/11/06-21:56:35.536 f8 Recovering log #3
-2026/11/06-21:56:35.541 f8 Reusing old log D:\gamaya_app\.wwebjs_auth\session\Default\Local Storage\leveldb/000003.log 
-2026/11/06-21:57:35.559 5988 Level-0 table #5: started
-2026/11/06-21:57:35.565 5988 Level-0 table #5: 18561 bytes OK
-2026/11/06-21:57:35.568 5988 Delete type=0 #3
+2026/11/09-12:21:41.464 2190 Reusing MANIFEST D:\gamaya_app\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
+2026/11/09-12:21:41.468 2190 Recovering log #4
+2026/11/09-12:21:41.478 2190 Reusing old log D:\gamaya_app\.wwebjs_auth\session\Default\Local Storage\leveldb/000004.log 
+2026/11/09-19:27:02.052 1530 Level-0 table #8: started
+2026/11/09-19:27:02.059 1530 Level-0 table #8: 16428 bytes OK
+2026/11/09-19:27:02.064 1530 Delete type=0 #4
