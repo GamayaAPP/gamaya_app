@@ -2212,6 +2212,56 @@ document.addEventListener("DOMContentLoaded", function() {
         input.setAttribute('pattern', '[0-9]*');
     });
 });
+// كود زرار "تحديث الآن" داخل index.html
+document.getElementById('btnConfirmUpdate').onclick = async function() {
+    try {
+        let confirmBtn = this;
+        confirmBtn.innerText = "جاري بدء التحميل (0%)...";
+        confirmBtn.disabled = true;
+
+        // 1. جلب رابط الـ APK المحدث من السيرفر أو جيت هب
+        let response = await fetch('https://raw.githubusercontent.com/.../version.json'); // الرابط الخاص بك
+        let data = await response.json();
+        
+        let apkUrl = data.apkUrl; // رابط ملف الـ APK الجديد
+
+        // 2. استخدام مكتبة Capacitor Filesystem / Browser لتحميل الملف وتثبيته
+        // أو تحميل الملف عبر Blob وتحديث نسبة الشريط امام المستخدم
+        let apkResponse = await fetch(apkUrl);
+        let reader = apkResponse.body.getReader();
+        let contentLength = +apkResponse.headers.get('Content-Length');
+        let receivedLength = 0; 
+        let chunks = [];
+
+        while(true) {
+            let {done, value} = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            receivedLength += value.length;
+            
+            // حساب النسبة المئوية لشريط التقدم
+            let percent = Math.round((receivedLength / contentLength) * 100);
+            confirmBtn.innerText = `جاري التحديث (${percent}%)...`;
+        }
+
+        let blob = new Blob(chunks);
+        let blobUrl = window.URL.createObjectURL(blob);
+        
+        // فتح ملف الـ APK للتشغيل والتثبيت الفوري أوتوماتيكياً
+        let a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = 'app-release.apk';
+        document.body.appendChild(a);
+        a.click();
+        
+        confirmBtn.innerText = "اكتمل التحديث بنجاح!";
+
+    } catch (e) {
+        alert("حدث خطأ أثناء التحديث، تأكد من الاتصال بالإنترنت.");
+        this.disabled = false;
+        this.innerText = "تحديث الآن";
+    }
+};
     </script>
 </body>
 </html>
