@@ -1,11 +1,17 @@
-2026/11/10-21:21:11.110 1f64 Reusing MANIFEST D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2026/11/10-21:21:11.111 1f64 Recovering log #36
-2026/11/10-21:21:11.140 1f64 Reusing old log D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000036.log 
-2026/11/10-21:21:19.192 1f64 Level-0 table #42: started
-2026/11/10-21:21:19.267 1f64 Level-0 table #42: 1203641 bytes OK
-2026/11/10-21:21:19.268 1f64 Delete type=0 #36
-2026/11/10-21:21:19.300 1f64 Compacting 1@1 + 2@2 files
-2026/11/10-21:21:19.507 1f64 Generated table #43@1: 60024 keys, 2238332 bytes
-2026/11/10-21:21:19.530 1f64 Generated table #44@1: 6836 keys, 912385 bytes
-2026/11/10-21:21:19.530 1f64 Compacted 1@1 + 2@2 files => 3150717 bytes
-2026/11/10-21:21:19.530 1f64 compacted to: files[ 0 0 2 0 0 0 0 ]
+2026/11/11-17:28:14.030 398 Reusing MANIFEST D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/11/11-17:28:14.031 398 Recovering log #41
+2026/11/11-17:28:14.100 398 Reusing old log D:\gamaya_app\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000041.log 
+2026/11/11-17:28:14.100 398 Delete type=2 #38
+2026/11/11-17:28:14.100 398 Delete type=2 #39
+2026/11/11-17:28:14.100 398 Delete type=2 #42
+2026/11/11-17:43:25.014 14cc Level-0 table #47: started
+2026/11/11-17:43:25.056 14cc Level-0 table #47: 1138882 bytes OK
+2026/11/11-17:43:25.057 14cc Delete type=0 #41
+2026/11/11-17:48:25.265 398 Compacting 1@1 + 2@2 files
+2026/11/11-17:48:25.410 398 Generated table #48@1: 57371 keys, 2249970 bytes
+2026/11/11-17:48:25.427 398 Generated table #49@1: 6825 keys, 874753 bytes
+2026/11/11-17:48:25.427 398 Compacted 1@1 + 2@2 files => 3124723 bytes
+2026/11/11-17:48:25.428 398 compacted to: files[ 0 0 2 0 0 0 0 ]
+2026/11/11-17:48:25.428 398 Delete type=2 #43
+2026/11/11-17:48:25.428 398 Delete type=2 #44
+2026/11/11-17:48:25.428 398 Delete type=2 #47

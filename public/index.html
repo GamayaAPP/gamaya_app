@@ -470,67 +470,88 @@
             </div>
         </div>
     </div>
+    <!-- نافذة التحديث وشريط التحميل -->
+<div id="updateModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; font-family: sans-serif; direction: rtl;">
+  <div style="background: #fff; padding: 25px; border-radius: 15px; width: 85%; max-width: 350px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+    
+    <h3 id="updateTitle" style="margin-top: 0; color: #333;">🚀 يتوفر تحديث جديد!</h3>
+    <p id="updateDesc" style="color: #666; font-size: 14px;">تم إضافة تحسينات جديدة لتطبيق جمعية.</p>
+    
+    <!-- زرار التحديث -->
+    <button id="btnUpdateNow" onclick="startAppUpdate()" style="background: #28a745; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px;">
+      تحديث الآن
+    </button>
+
+    <!-- شريط التحميل (مخفي في البداية) -->
+    <div id="progressContainer" style="display: none; margin-top: 20px;">
+      <div style="width: 100%; background: #e0e0e0; border-radius: 10px; overflow: hidden; height: 20px;">
+        <div id="progressBar" style="width: 0%; height: 100%; background: #007bff; transition: width 0.2s;"></div>
+      </div>
+      <p id="progressText" style="margin-top: 8px; font-weight: bold; color: #007bff;">0%</p>
+    </div>
+
+  </div>
+</div>
 
     <script>
-    const CURRENT_APP_VERSION = "1.1"; 
+    const CURRENT_APP_VERSION = "1.1";
+const VERSION_URL = "https://raw.githubusercontent.com/GamayaAPP/gamaya_app/main/public/version.json";
 
-    async function checkForUpdates() {
-    try {
-        let response = await fetch('https://raw.githubusercontent.com/GamayaAPP/gamaya_app/refs/heads/main/gamaya.json');
-        let data = await response.json();
+async function checkForUpdates() {
+  try {
+    let response = await fetch(VERSION_URL + "?t=" + new Date().getTime());
+    if (!response.ok) return;
+    let data = await response.json();
 
-        if (data.version !== CURRENT_APP_VERSION) {
-            document.getElementById('updateModal').style.display = 'flex';
-            
-            let confirmBtn = document.getElementById('btnConfirmUpdate');
-            let newBtn = confirmBtn.cloneNode(true);
-            confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
-
-    newBtn.onclick = async function() {
-    try {
-        newBtn.innerText = "جاري تحميل التحديث...";
-        newBtn.disabled = true;
-
-        // 1. جلب ملف التحديث مباشرة كـ Blob في خلفية التطبيق بدون متصفح
-        let response = await fetch(data.apkUrl);
-        let blob = await response.blob();
-        
-        // 2. إنشاء مسار محلي مؤقت للملف داخل التطبيق
-        let blobUrl = window.URL.createObjectURL(blob);
-        
-        // 3. إنشاء رابط خفي وتشغيل أمر التثبيت مباشرة
-        let a = document.createElement('a');
-        a.href = blobUrl;
-        a.setAttribute('download', 'app.apk');
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        newBtn.innerText = "تم التحميل، جاري الفتح...";
-        
-        setTimeout(() => {
-            newBtn.innerText = "تحديث الآن";
-            newBtn.disabled = false;
-        }, 4000);
-
-    } catch (err) {
-        console.error("خطأ في التحديث:", err);
-        alert("فشل التحديث، تأكد من الاتصال.");
-        newBtn.innerText = "تحديث الآن";
-        newBtn.disabled = false;
+    if (data.version !== CURRENT_APP_VERSION) {
+      document.getElementById("updateModal").style.display = "flex";
+      if(data.releaseNotes) {
+        document.getElementById("updateDescinnerText") = data.releaseNotes;
+      }
+      window.currentApkUrl = data.apkUrl;
     }
-};
-
-            document.getElementById('btnCancelUpdate').onclick = function() {
-                document.getElementById('updateModal').style.display = 'none';
-            };
-        }
-    } catch (error) {
-        console.log("Check update failed", error);
-    }
+  } catch (e) {
+    console.log("خطأ في فحص التحديثات", e);
+  }
 }
 
-window.addEventListener('DOMContentLoaded', checkForUpdates);
+function startAppUpdate() {
+  document.getElementById("btnUpdateNow").style.display = "none";
+  document.getElementById("updateTitle").innerText = "جاري تحميل التحديث...";
+  document.getElementById("progressContainer").style.display = "block";
+
+  let progress = 0;
+  let progressBar = document.getElementById("progressBar");
+  let progressText = document.getElementById("progressText");
+
+  let interval = setInterval(() => {
+    progress += 10;
+    if (progress > 100) {
+      progress = 100;
+      clearInterval(interval);
+      progressBar.style.width = "100%";
+      progressText.innerText = "100%";
+
+      document.getElementById("updateTitle").innerText = "✅ تم التحميل بنجاح!";
+      document.getElementById("updateDesc").innerText = "جاري فتح التحديث الجديد...";
+      document.getElementById("progressContainer").style.display = "none";
+
+      setTimeout(() => {
+        if (window.currentApkUrl) {
+          window.location.href = window.currentApkUrl;
+        } else {
+          window.location.reload(true);
+        }
+      }, 1500);
+
+    } else {
+      progressBar.style.width = progress + "%";
+      progressText.innerText = progress + "%";
+    }
+  }, 200);
+}
+
+window.addEventListener("load", checkForUpdates);
     </script>
     <!-- نافذة منسدلة لإنشاء جمعية أو مناسبة -->
     <div id="addBottomSheet" class="bottom-sheet-overlay hidden">
