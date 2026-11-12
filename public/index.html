@@ -514,6 +514,14 @@ async function checkForUpdates() {
                 descEl.innerText = data.releaseNotes;
             }
             window.currentApkUrl = data.apkUrl;
+            let updateBtn = document.getElementById("btnUpdateNow");
+if (updateBtn) {
+    updateBtn.onclick = function() {
+        if (window.currentApkUrl) {
+            window.location.href = window.currentApkUrl;
+        }
+    };
+}
         }
     } catch (e) {
         console.log("خطأ في فحص التحديثات:", e);
