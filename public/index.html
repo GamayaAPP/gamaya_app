@@ -2,31 +2,35 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>تطبيق جمعية</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    position: fixed;
     background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81);
     color: #fff;
+  }
+
+  body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 100vh;
-    width: 100%;
-    max-width: 100vw;
-    margin: 0;
-    padding: 0;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
-    overflow-x: hidden;
     position: relative;
-}
+  }
+</style>
 
         body::before {
             content: '';
@@ -495,7 +499,7 @@
 
     <script>
     const CURRENT_APP_VERSION = "1.1";
-const VERSION_URL = "https://raw.githubusercontent.com/GamayaAPP/gamaya_app/main/public/version.json";
+    const VERSION_URL = "https://raw.githubusercontent.com/GamayaAPP/gamaya_app/main/version.json";
 
 async function checkForUpdates() {
   try {
@@ -504,51 +508,65 @@ async function checkForUpdates() {
     let data = await response.json();
 
     if (data.version !== CURRENT_APP_VERSION) {
-      document.getElementById("updateModal").style.display = "flex";
-      if(data.releaseNotes) {
-        document.getElementById("updateDescinnerText") = data.releaseNotes;
-      }
-      window.currentApkUrl = data.apkUrl;
+            document.getElementById("updateModal").style.display = "flex";
+            let descEl = document.getElementById("updateDescinnerText");
+            if (descEl && data.releaseNotes) {
+                descEl.innerText = data.releaseNotes;
+            }
+            window.currentApkUrl = data.apkUrl;
+        }
+    } catch (e) {
+        console.log("خطأ في فحص التحديثات:", e);
     }
-  } catch (e) {
-    console.log("خطأ في فحص التحديثات", e);
-  }
 }
 
-function startAppUpdate() {
-  document.getElementById("btnUpdateNow").style.display = "none";
-  document.getElementById("updateTitle").innerText = "جاري تحميل التحديث...";
-  document.getElementById("progressContainer").style.display = "block";
+  async function startAppUpdate() {
+    document.getElementById("btnUpdateNow").style.display = "none";
+    document.getElementById("updateTitle").innerText = "جاري تحميل التحديث...";
+    document.getElementById("progressContainer").style.display = "block";
 
-  let progress = 0;
-  let progressBar = document.getElementById("progressBar");
-  let progressText = document.getElementById("progressText");
+    let progressBar = document.getElementById("progressBar");
+    let progressText = document.getElementById("progressText");
 
-  let interval = setInterval(() => {
-    progress += 10;
-    if (progress > 100) {
-      progress = 100;
-      clearInterval(interval);
-      progressBar.style.width = "100%";
-      progressText.innerText = "100%";
-
-      document.getElementById("updateTitle").innerText = "✅ تم التحميل بنجاح!";
-      document.getElementById("updateDesc").innerText = "جاري فتح التحديث الجديد...";
-      document.getElementById("progressContainer").style.display = "none";
-
-      setTimeout(() => {
-        if (window.currentApkUrl) {
-          window.location.href = window.currentApkUrl;
-        } else {
-          window.location.reload(true);
+    try {
+        const response = await fetch(window.currentApkUrl);
+        const reader = response.body.getReader();
+        const contentLength = +response.headers.get('Content-Length');
+        
+        let receivedLength = 0;
+        let chunks = [];
+        
+        while(true) {
+            const {done, value} = await reader.read();
+            if (done) break;
+            
+            chunks.push(value);
+            receivedLength += value.length;
+            
+            if (contentLength) {
+                let percent = Math.round((receivedLength / contentLength) * 100);
+                progressBar.style.width = percent + '%';
+                progressText.innerText = percent + '%';
+            }
         }
-      }, 1500);
-
-    } else {
-      progressBar.style.width = progress + "%";
-      progressText.innerText = progress + "%";
+        
+        let blob = new Blob(chunks);
+        let downloadUrl = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'app-release.apk';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        
+        document.getElementById("updateTitle").innerText = "تم التحميل بنجاح ✅";
+        document.getElementById("updateDesc").innerText = "جاري فتح التحديث الجديد...";
+        
+    } catch (error) {
+        alert("حدث خطأ أثناء التحميل: " + error.message);
+        document.getElementById('progressContainer').style.display = 'none';
+        document.getElementById('btnUpdateNow').style.display = 'block';
     }
-  }, 200);
 }
 
 window.addEventListener("load", checkForUpdates);
@@ -1004,7 +1022,7 @@ window.addEventListener("load", checkForUpdates);
     <script>
         const SUPABASE_URL = 'https://jvhisnbkjsvkizvqjnuk.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_uzWhyqGlwFl5b2all...'; // حط المفتاح الكامل هنا
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
         let currentPhone = localStorage.getItem('gamaya_phone') || '';
         let currentUserName = localStorage.getItem('gamaya_username') || 'مستخدم جديد';
         let currentLang = localStorage.getItem('gamaya_lang') || 'ar';
@@ -2241,7 +2259,7 @@ document.getElementById('btnConfirmUpdate').onclick = async function() {
         confirmBtn.disabled = true;
 
         // 1. جلب رابط الـ APK المحدث من السيرفر أو جيت هب
-        let response = await fetch('https://raw.githubusercontent.com/.../version.json'); // الرابط الخاص بك
+        let response = await fetch('https://raw.githubusercontent.com/GamayaAPP/gamaya_app/main/version.json');
         let data = await response.json();
         
         let apkUrl = data.apkUrl; // رابط ملف الـ APK الجديد
